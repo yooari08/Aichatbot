@@ -1,0 +1,211 @@
+{
+  "meta": {
+    "source": "https://www.thunderjob.com",
+    "siteName": "썬더잡 (ThunderJob)",
+    "description": "해외인턴십의 시작, 썬더잡으로부터",
+    "crawledAt": "2026-05-14",
+    "framework": "Next.js"
+  },
+  "colors": {
+    "brand": {
+      "primary": "#012DFF",
+      "primaryRgb": "rgb(1, 45, 255)",
+      "secondary": "#4C6FD8",
+      "secondaryRgb": "rgb(76, 111, 216)"
+    },
+    "neutral": {
+      "900": "#0A0A0A",
+      "800": "#111111",
+      "600": "#444444",
+      "500": "#666666",
+      "400": "#878B95",
+      "300": "#999999",
+      "200": "#DDDDDD",
+      "100": "#E5E5E5",
+      "50": "#F8F8F9",
+      "25": "#F0F2F6"
+    },
+    "background": {
+      "primary": "#FFFFFF",
+      "secondary": "#F8F8F9",
+      "tertiary": "#F0F2F6",
+      "overlay": "rgba(18, 18, 18, 0.5)"
+    },
+    "text": {
+      "primary": "#0A0A0A",
+      "secondary": "#111111",
+      "muted": "#666666",
+      "placeholder": "#878B95",
+      "disabled": "#999999",
+      "onDark": "#FFFFFF",
+      "accent": "#012DFF"
+    },
+    "border": {
+      "default": "#E5E5E5",
+      "strong": "#DDDDDD",
+      "active": "#111111"
+    },
+    "status": {
+      "info": "#4C6FD8",
+      "infoText": "#0A0A0A"
+    }
+  },
+  "typography": {
+    "fontFamily": {
+      "primary": "Pretendard, -apple-system, BlinkMacSystemFont, 'Malgun Gothic', sans-serif",
+      "fallback": "system-ui, sans-serif"
+    },
+    "scale": {
+      "xs": "12px",
+      "sm": "14px",
+      "base": "16px",
+      "lg": "18px",
+      "xl": "20px",
+      "2xl": "24px",
+      "3xl": "32px"
+    },
+    "weight": {
+      "regular": 400,
+      "medium": 500,
+      "semibold": 600,
+      "bold": 700
+    },
+    "lineHeight": {
+      "tight": "1.2",
+      "normal": "1.5",
+      "relaxed": "1.75"
+    },
+    "headings": {
+      "h1": { "fontSize": "32px", "fontWeight": 700, "color": "#0A0A0A" },
+      "h2": { "fontSize": "24px", "fontWeight": 600, "color": "#012DFF" },
+      "h3": { "fontSize": "20px", "fontWeight": 600, "color": "#111111" },
+      "h4": { "fontSize": "16px", "fontWeight": 600, "color": "#111111" }
+    }
+  },
+  "spacing": {
+    "0": "0px",
+    "1": "4px",
+    "2": "8px",
+    "3": "12px",
+    "4": "16px",
+    "5": "20px",
+    "6": "24px",
+    "8": "32px",
+    "10": "40px",
+    "12": "48px"
+  },
+  "borderRadius": {
+    "sm": "4px",
+    "md": "8px",
+    "lg": "16px",
+    "full": "9999px"
+  },
+  "shadows": {
+    "none": "none",
+    "sm": "0 1px 3px rgba(0,0,0,0.08)",
+    "md": "0 4px 12px rgba(0,0,0,0.08)",
+    "lg": "0 8px 24px rgba(0,0,0,0.12)"
+  },
+  "components": {
+    "header": {
+      "backgroundColor": "#FFFFFF",
+      "height": "60px",
+      "borderBottom": "1px solid #E5E5E5",
+      "padding": "0 24px",
+      "position": "sticky",
+      "top": 0,
+      "zIndex": 100
+    },
+    "button": {
+      "primary": {
+        "backgroundColor": "#111111",
+        "color": "#FFFFFF",
+        "borderRadius": "8px",
+        "padding": "9px 16px",
+        "fontSize": "14px",
+        "fontWeight": 500,
+        "border": "none",
+        "hover": { "opacity": 0.8 }
+      },
+      "secondary": {
+        "backgroundColor": "#FFFFFF",
+        "color": "#111111",
+        "borderRadius": "8px",
+        "padding": "9px 16px",
+        "fontSize": "14px",
+        "fontWeight": 500,
+        "border": "1px solid #E5E5E5",
+        "hover": { "backgroundColor": "#F8F8F9" }
+      },
+      "accent": {
+        "backgroundColor": "#012DFF",
+        "color": "#FFFFFF",
+        "borderRadius": "8px",
+        "padding": "9px 16px",
+        "fontSize": "14px",
+        "fontWeight": 500,
+        "border": "none"
+      }
+    },
+    "input": {
+      "backgroundColor": "#FFFFFF",
+      "color": "#0A0A0A",
+      "border": "1px solid #E5E5E5",
+      "borderRadius": "8px",
+      "padding": "12px 16px",
+      "fontSize": "14px",
+      "placeholder": "#878B95",
+      "focus": { "borderColor": "#012DFF", "outline": "none" }
+    },
+    "card": {
+      "backgroundColor": "#FFFFFF",
+      "borderRadius": "16px",
+      "border": "1px solid #E5E5E5",
+      "padding": "24px",
+      "shadow": "none"
+    },
+    "notice": {
+      "backgroundColor": "#4C6FD8",
+      "color": "#FFFFFF",
+      "borderRadius": "16px",
+      "padding": "16px 24px",
+      "fontSize": "14px"
+    },
+    "tab": {
+      "active": {
+        "color": "#012DFF",
+        "fontWeight": 600,
+        "borderBottom": "2px solid #012DFF"
+      },
+      "inactive": {
+        "color": "#878B95",
+        "fontWeight": 400
+      },
+      "padding": "13px 16px",
+      "fontSize": "16px"
+    },
+    "badge": {
+      "default": {
+        "backgroundColor": "#F8F8F9",
+        "color": "#666666",
+        "borderRadius": "4px",
+        "padding": "4px 8px",
+        "fontSize": "12px",
+        "fontWeight": 500
+      },
+      "accent": {
+        "backgroundColor": "#012DFF",
+        "color": "#FFFFFF",
+        "borderRadius": "4px",
+        "padding": "4px 8px",
+        "fontSize": "12px",
+        "fontWeight": 500
+      }
+    },
+    "nav": {
+      "linkActive": { "color": "#012DFF", "fontWeight": 600, "fontSize": "16px" },
+      "linkDefault": { "color": "#0A0A0A", "fontWeight": 400, "fontSize": "16px" },
+      "padding": "24px"
+    }
+  }
+}
