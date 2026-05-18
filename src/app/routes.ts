@@ -1,7 +1,7 @@
 import { createBrowserRouter } from "react-router";
-import Layout from "./components/Layout";
-import ChatbotPage from "./components/ChatbotPage";
-import AdminPage from "./components/AdminPage";
+import Layout from "./layouts/MainLayout";
+import ChatbotPage from "./pages/chat/ChatbotPage";
+import AdminPage from "./pages/admin/AdminPage";
 
 export const router = createBrowserRouter([
   {
