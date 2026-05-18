@@ -31,7 +31,7 @@ export function DocumentsTable() {
         <h2 className="text-[16px] font-bold text-foreground">문서 목록</h2>
         <div className="flex gap-2">
           <SearchInput value={search} onChange={setSearch} placeholder="문서 검색…" className="w-[200px]" />
-          <Button size="sm" className="bg-[#012DFF] hover:bg-[#0025d4] text-white">
+          <Button size="sm" className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white">
             + 문서 추가
           </Button>
         </div>
@@ -66,7 +66,7 @@ export function DocumentsTable() {
                 <TableCell className="px-4 py-3 text-[12px] text-muted-foreground">{doc.date}</TableCell>
                 <TableCell className="px-4 py-3 text-[12px] text-muted-foreground">{doc.owner}</TableCell>
                 <TableCell className="px-4 py-3">
-                  <Button variant="link" size="sm" className="h-auto p-0 text-[11px] text-[#012DFF]">
+                  <Button variant="link" size="sm" className="h-auto p-0 text-[11px] text-[#2563EB]">
                     편집
                   </Button>
                 </TableCell>

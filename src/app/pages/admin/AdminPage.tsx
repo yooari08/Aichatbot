@@ -40,7 +40,7 @@ export default function AdminPage() {
           <h1 className="text-[15px] font-bold text-[#0A0A0A]">{VIEW_LABELS[activeView]}</h1>
           <div className="flex items-center gap-3">
             <span className="text-[12px] text-[#878B95]">마지막 업데이트: 방금 전</span>
-            <button className="text-[12px] text-[#012DFF] hover:underline">새로고침</button>
+            <button className="text-[12px] text-[#2563EB] hover:underline">새로고침</button>
           </div>
         </div>
 

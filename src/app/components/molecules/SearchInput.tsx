@@ -17,7 +17,7 @@ export function SearchInput({ value, onChange, placeholder = "검색…", classN
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
-        className="pl-8 h-8 text-[12px] bg-[#F8F8F9] border-[#E5E5E5] focus-visible:ring-[#012DFF] focus-visible:border-[#012DFF]"
+        className="pl-8 h-8 text-[12px] bg-[#F8F8F9] border-[#E5E5E5] focus-visible:ring-[#2563EB] focus-visible:border-[#2563EB]"
       />
     </div>
   );

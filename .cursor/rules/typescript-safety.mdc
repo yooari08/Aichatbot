@@ -1,0 +1,25 @@
+---
+description: TypeScript safety and code quality baseline
+alwaysApply: true
+---
+
+# TypeScript Safety Rules
+
+타입스크립트 안정성 규칙
+
+- Keep code compatible with strict TypeScript settings used in this project.
+  - 이 프로젝트의 strict TypeScript 설정과 호환되게 코드를 작성합니다.
+- Avoid `any` whenever possible; prefer explicit interfaces, unions, and utility types.
+  - `any` 사용을 최소화하고 명시적 인터페이스/유니온/유틸리티 타입을 우선합니다.
+- Respect ESLint and React Hooks rules; do not suppress warnings without clear justification.
+  - ESLint/React Hooks 규칙을 준수하고, 근거 없는 경고 무시는 하지 않습니다.
+- Keep formatting aligned with Prettier config.
+  - 코드 포맷은 Prettier 설정을 따릅니다.
+  - single quotes
+  - no semicolons
+  - trailing commas
+  - print width 100
+- After meaningful edits, run lint checks and resolve issues introduced by the change.
+  - 의미 있는 수정 후에는 린트를 실행하고, 변경으로 유입된 이슈를 해결합니다.
+- Remove dead code/files created by refactors if they are no longer referenced.
+  - 리팩터링으로 생긴 미참조 코드/파일은 정리합니다.

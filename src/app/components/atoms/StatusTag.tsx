@@ -7,7 +7,7 @@ const VARIANTS: Record<StatusVariant, string> = {
   success: "bg-[#DCFCE7] text-[#166534]",
   warning: "bg-[#FEF9C3] text-[#854d0e]",
   danger:  "bg-[#FEE2E2] text-[#991b1b]",
-  info:    "bg-[#EEF2FF] text-[#012DFF]",
+  info:    "bg-[#EEF2FF] text-[#2563EB]",
   gray:    "bg-[#F3F4F6] text-[#374151]",
 };
 

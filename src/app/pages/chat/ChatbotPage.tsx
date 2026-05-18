@@ -37,24 +37,37 @@ export default function ChatbotPage() {
 
       <div className="flex-1 flex flex-col overflow-hidden">
         {messages.length === 0 ? (
-          <WelcomeScreen onSend={handleSuggestion} />
-        ) : (
-          <MessageFeed
-            messages={messages}
-            isTyping={isTyping}
-            likedMessages={likedMessages}
-            copiedId={copiedId}
-            onLike={handleLike}
-            onCopy={handleCopy}
+          <WelcomeScreen
+            onSend={handleSuggestion}
+            composer={
+              <ChatComposer
+                value={input}
+                onChange={setInput}
+                onSend={handleSend}
+                disabled={isTyping}
+                className="px-0 py-0"
+                showDisclaimer={false}
+              />
+            }
           />
+        ) : (
+          <>
+            <MessageFeed
+              messages={messages}
+              isTyping={isTyping}
+              likedMessages={likedMessages}
+              copiedId={copiedId}
+              onLike={handleLike}
+              onCopy={handleCopy}
+            />
+            <ChatComposer
+              value={input}
+              onChange={setInput}
+              onSend={handleSend}
+              disabled={isTyping}
+            />
+          </>
         )}
-
-        <ChatComposer
-          value={input}
-          onChange={setInput}
-          onSend={handleSend}
-          disabled={isTyping}
-        />
       </div>
     </div>
   );

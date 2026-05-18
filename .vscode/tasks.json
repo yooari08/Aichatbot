@@ -1,0 +1,19 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "앱 미리보기 열기 (Simple Browser)",
+      "type": "shell",
+      "command": "cursor",
+      "args": [
+        "--open-url",
+        "vscode://vscode.simple-browser/show?url=http://localhost:5174/"
+      ],
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "never",
+        "panel": "shared"
+      }
+    }
+  ]
+}

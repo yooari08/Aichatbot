@@ -55,7 +55,7 @@ export function AdminSidebar({
                     }}
                     className={cn(
                       "w-full text-left flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-semibold",
-                      isGroupActive ? "text-[#012DFF]" : "text-[#0A0A0A]"
+                      isGroupActive ? "text-[#2563EB]" : "text-[#0A0A0A]"
                     )}
                   >
                     {group.label}
@@ -76,7 +76,7 @@ export function AdminSidebar({
                           className={cn(
                             "w-full text-left flex items-center gap-1.5 px-3 py-1.5 pl-6 rounded-md text-[12px] transition-all",
                             activeView === sub.key
-                              ? "bg-white text-[#012DFF] font-semibold border-l-[3px] border-[#012DFF] pl-[21px] shadow-sm"
+                              ? "bg-white text-[#2563EB] font-semibold border-l-[3px] border-[#2563EB] pl-[21px] shadow-sm"
                               : "text-[#444] hover:bg-[#F0F2F6]"
                           )}
                         >
@@ -103,7 +103,7 @@ export function AdminSidebar({
         />
         <Link
           to="/"
-          className="mt-2 block text-center text-[11px] text-[#012DFF] border border-dashed border-[#012DFF] rounded-lg py-1.5 bg-[#EEF2FF] hover:bg-[#E0E8FF] transition-colors"
+          className="mt-2 block text-center text-[11px] text-[#2563EB] border border-dashed border-[#2563EB] rounded-lg py-1.5 bg-[#EEF2FF] hover:bg-[#E0E8FF] transition-colors"
         >
           ← 챗봇으로 돌아가기
         </Link>

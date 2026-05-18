@@ -10,7 +10,7 @@ export function AnalyticsDashboard() {
 
       {/* KPIs */}
       <div className="grid grid-cols-4 gap-4">
-        <KpiCard label="이번 달 질문 수" value="1,284" sub="▲ 12% vs 지난달" accent="text-[#012DFF]" />
+        <KpiCard label="이번 달 질문 수" value="1,284" sub="▲ 12% vs 지난달" accent="text-[#2563EB]" />
         <KpiCard label="평균 응답 시간" value="1.2s" sub="목표: 2.0s 이내" />
         <KpiCard label="답변 만족도" value="87%" sub="좋아요 / 전체 응답" />
         <KpiCard label="미응답률" value="4.3%" sub="▼ 1.1%p 개선" accent="text-destructive" />
@@ -48,7 +48,7 @@ export function AnalyticsDashboard() {
           <CardContent className="flex flex-col gap-2">
             {TOP_QUESTIONS.map((q, i) => (
               <div key={q.label} className="flex items-center gap-3">
-                <span className="size-5 rounded-full bg-[#EEF2FF] text-[#012DFF] text-[10px] font-bold flex items-center justify-center flex-shrink-0">
+                <span className="size-5 rounded-full bg-[#EEF2FF] text-[#2563EB] text-[10px] font-bold flex items-center justify-center flex-shrink-0">
                   {i + 1}
                 </span>
                 <span className="flex-1 text-[12px] text-foreground">{q.label}</span>

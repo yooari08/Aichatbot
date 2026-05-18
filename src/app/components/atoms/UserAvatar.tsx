@@ -4,7 +4,7 @@ import { cn } from "@/app/lib/utils";
 type Variant = "primary" | "dark" | "muted";
 
 const BG: Record<Variant, string> = {
-  primary: "bg-[#012DFF] text-white",
+  primary: "bg-[#2563EB] text-white",
   dark:    "bg-[#111] text-white",
   muted:   "bg-[#9ca3af] text-white",
 };

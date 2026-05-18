@@ -9,9 +9,18 @@ type Props = {
   onChange: (v: string) => void;
   onSend: () => void;
   disabled?: boolean;
+  className?: string;
+  showDisclaimer?: boolean;
 };
 
-export function ChatComposer({ value, onChange, onSend, disabled }: Props) {
+export function ChatComposer({
+  value,
+  onChange,
+  onSend,
+  disabled,
+  className,
+  showDisclaimer = true,
+}: Props) {
   const handleKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -20,11 +29,11 @@ export function ChatComposer({ value, onChange, onSend, disabled }: Props) {
   };
 
   return (
-    <div className="border-t border-[#E5E5E5] bg-white px-4 py-3">
+    <div className={cn("bg-white px-4 py-3", className)}>
       <div
         className={cn(
           "flex items-center justify-center gap-2 align-middle bg-[#F8F8F9] border rounded-xl px-3 py-2 transition-all",
-          "border-[#E5E5E5] focus-within:border-[#012DFF] focus-within:ring-1 focus-within:ring-[#012DFF]"
+          "border-[#E5E5E5] focus-within:border-[#2563EB] focus-within:ring-1 focus-within:ring-[#2563EB]"
         )}
       >
         <Textarea
@@ -41,14 +50,16 @@ export function ChatComposer({ value, onChange, onSend, disabled }: Props) {
           onClick={onSend}
           disabled={!value.trim() || disabled}
           size="icon"
-          className="size-8 flex-shrink-0 rounded-lg bg-[#012DFF] hover:bg-[#0025d4] disabled:bg-[#E5E5E5] disabled:text-muted-foreground"
+          className="size-8 flex-shrink-0 rounded-lg bg-[#2563EB] hover:bg-[#1D4ED8] disabled:bg-[#E5E5E5] disabled:text-muted-foreground"
         >
           <Send className="size-4" />
         </Button>
       </div>
-      <p className="text-center text-[10px] text-muted-foreground/60 mt-1.5">
-        AI 답변은 참고용입니다. 중요한 사안은 담당 부서에 확인하세요.
-      </p>
+      {showDisclaimer && (
+        <p className="text-center text-[10px] text-muted-foreground/60 mt-1.5">
+          AI 답변은 참고용입니다. 중요한 사안은 담당 부서에 확인하세요.
+        </p>
+      )}
     </div>
   );
 }

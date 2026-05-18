@@ -1,0 +1,23 @@
+---
+description: React and component composition conventions
+alwaysApply: true
+---
+
+# React Component Rules
+
+리액트 컴포넌트 규칙
+
+- Use function components with explicit TypeScript props.
+  - 명시적인 TypeScript props를 사용하는 함수형 컴포넌트를 사용합니다.
+- Keep UI composition aligned to Atomic Design (`atoms` -> `molecules` -> `organisms`).
+  - UI 구성은 Atomic Design 계층을 따릅니다.
+- Reuse existing components first; create new components only when reuse is expected.
+  - 기존 컴포넌트를 우선 재사용하고, 재사용 가치가 있을 때만 새로 만듭니다.
+- Use React hooks intentionally (`useState`, `useMemo`, `useCallback`) and keep hook logic readable.
+  - React Hook은 의도를 가지고 사용하고 로직을 읽기 쉽게 유지합니다.
+- For form inputs, never mix controlled and uncontrolled props in the same render path.
+  - 폼 입력 요소에서 controlled/uncontrolled props를 동시에 혼용하지 않습니다.
+- For checkbox/radio controls, prefer union prop types to enforce valid controlled/uncontrolled usage.
+  - 체크박스/라디오는 union props 타입으로 유효한 사용만 허용합니다.
+- Prefer small, composable components over large page-level JSX blocks.
+  - 큰 페이지 JSX 블록보다 작고 조합 가능한 컴포넌트를 선호합니다.

@@ -25,7 +25,7 @@ export const CONVERSATION_GROUPS: { key: ConversationGroup; label: string }[] = 
 ];
 
 export const CAT_STYLE: Record<Category, { badge: string; chip: string }> = {
-  HR: { badge: "bg-[#EEF2FF] text-[#012DFF]", chip: "bg-[#EEF2FF] text-[#012DFF]" },
+  HR: { badge: "bg-[#EEF2FF] text-[#2563EB]", chip: "bg-[#EEF2FF] text-[#2563EB]" },
   복리후생: { badge: "bg-[#ECFCCB] text-[#4d7c0f]", chip: "bg-[#ECFCCB] text-[#4d7c0f]" },
   프로젝트: { badge: "bg-[#FEF3C7] text-[#92400e]", chip: "bg-[#FEF3C7] text-[#92400e]" },
   이슈: { badge: "bg-[#FCE7F3] text-[#be185d]", chip: "bg-[#FCE7F3] text-[#be185d]" },

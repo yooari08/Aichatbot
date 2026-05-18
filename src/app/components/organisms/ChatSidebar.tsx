@@ -99,7 +99,7 @@ export function ChatSidebar({
           onClick={onNewChat}
           className="w-full justify-start gap-2 h-9 text-[13px] font-semibold border-[#E5E5E5] bg-white hover:bg-[#F8F8F9]"
         >
-          <Plus className="size-4 text-[#012DFF]" />
+          <Plus className="size-4 text-[#2563EB]" />
           새 채팅
         </Button>
 
@@ -154,7 +154,7 @@ export function ChatSidebar({
         />
         <a
           href="/admin"
-          className="mt-2 block text-center text-[11px] text-[#012DFF] border border-dashed border-[#012DFF] rounded-lg py-1.5 bg-[#EEF2FF] hover:bg-[#E0E8FF] transition-colors"
+          className="mt-2 block text-center text-[11px] text-[#2563EB] border border-dashed border-[#2563EB] rounded-lg py-1.5 bg-[#EEF2FF] hover:bg-[#E0E8FF] transition-colors"
         >
           어드민 콘솔 →
         </a>

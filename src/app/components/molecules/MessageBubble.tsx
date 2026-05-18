@@ -2,7 +2,9 @@ import { ThumbsUp, ThumbsDown, Copy, Check, FileText } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/components/ui/tooltip";
 import { BotBadge } from "@/app/components/atoms/BotBadge";
+import { formatMessageTime } from "@/app/lib/formatMessageTime";
 import { cn } from "@/app/lib/utils";
+import { BRAND_PRIMARY_RGB } from "@/app/constants/brand";
 import type { Message } from "@/app/types/chat";
 
 function formatText(text: string) {
@@ -55,13 +57,18 @@ type Props = {
 export function MessageBubble({ message, liked, copiedId, onLike, onCopy }: Props) {
   const isBot = message.sender === "bot";
   const isCopied = copiedId === message.id;
+  const timeLabel = formatMessageTime(message.timestamp);
 
   if (!isBot) {
     return (
-      <div className="flex justify-end">
-        <div className="max-w-[75%] bg-[#012DFF] text-white rounded-2xl rounded-tr-sm px-4 py-2.5 text-[13px] leading-relaxed">
+      <div className="flex flex-col items-end gap-1">
+        <div
+          className="max-w-[75%] text-white rounded-2xl rounded-tr-sm px-4 py-2.5 text-[13px] leading-relaxed"
+          style={{ backgroundColor: BRAND_PRIMARY_RGB }}
+        >
           {formatText(message.text)}
         </div>
+        <span className="text-[10px] text-[#878B95] px-1">{timeLabel}</span>
       </div>
     );
   }
@@ -71,6 +78,7 @@ export function MessageBubble({ message, liked, copiedId, onLike, onCopy }: Prop
       <div className="flex items-center gap-1.5 mb-1">
         <BotBadge />
         <span className="text-[11px] text-muted-foreground">사내 챗봇</span>
+        <span className="text-[10px] text-[#878B95] ml-1">{timeLabel}</span>
       </div>
 
       <div className="max-w-[80%] bg-white border border-[#E5E5E5] rounded-2xl rounded-tl-sm px-4 py-3 text-[13px] leading-[1.7] text-foreground shadow-sm">
@@ -88,7 +96,7 @@ export function MessageBubble({ message, liked, copiedId, onLike, onCopy }: Prop
           tooltip="도움이 됐어요"
           onClick={() => onLike(message.id, true)}
           active={liked === true}
-          activeClassName="text-[#012DFF] bg-[#EEF2FF]"
+          activeClassName="text-[#2563EB] bg-[#EFF6FF]"
         >
           <ThumbsUp className="size-3.5" />
         </ActionButton>

@@ -58,7 +58,7 @@ export const NAV: NavSection[] = [
 ];
 
 export const CATEGORY_BARS = [
-  { name: "HR / 취업규칙", pct: 38, color: "#012DFF" },
+  { name: "HR / 취업규칙", pct: 38, color: "#2563EB" },
   { name: "복리후생", pct: 29, color: "#4C6FD8" },
   { name: "프로젝트 표준", pct: 24, color: "#7C9CF8" },
   { name: "기타", pct: 9, color: "#B0C0F0" },

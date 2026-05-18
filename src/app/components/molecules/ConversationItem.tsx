@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { MoreHorizontal } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -52,7 +52,7 @@ export function ConversationItem({
     <>
       <div
         className={cn(
-          "flex items-center w-full rounded-lg",
+          "relative flex items-center w-full rounded-lg",
           isActive && "bg-white shadow-sm"
         )}
       >
@@ -60,37 +60,42 @@ export function ConversationItem({
           type="button"
           onClick={onClick}
           className={cn(
-            "flex-1 min-w-0 text-left px-3 py-2.5 rounded-lg text-[14px] font-semibold truncate transition-colors",
-            isActive ? "text-[#012DFF]" : "text-foreground hover:bg-accent/50"
+            "flex-1 min-w-0 text-left px-3 py-2.5 pr-9 rounded-lg text-[14px] font-semibold truncate transition-colors",
+            isActive ? "text-[#2563EB]" : "text-foreground hover:bg-accent/50"
           )}
         >
           {conversation.title}
         </button>
 
-        <DropdownMenu>
+        <DropdownMenu modal={false}>
           <DropdownMenuTrigger asChild>
-            <Button
+            <button
               type="button"
-              variant="ghost"
-              size="icon"
-              className="size-7 flex-shrink-0 text-[#878B95] hover:text-foreground"
-              onClick={(e) => e.stopPropagation()}
               aria-label="대화 메뉴"
+              className="absolute right-1 top-1/2 z-10 -translate-y-1/2 flex size-7 items-center justify-center rounded-md text-[#878B95] hover:bg-[#F0F2F6] hover:text-foreground"
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={(e) => e.stopPropagation()}
             >
               <MoreHorizontal className="size-4" />
-            </Button>
+            </button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-44">
-            <DropdownMenuItem onClick={openRename}>
-              <Pencil />
-              채팅방 이름 변경
+          <DropdownMenuContent align="end" side="bottom" className="w-44 z-[200]">
+            <DropdownMenuItem
+              onSelect={(e) => {
+                e.preventDefault();
+                openRename();
+              }}
+            >
+              이름 변경
             </DropdownMenuItem>
             <DropdownMenuItem
               variant="destructive"
-              onClick={() => onDelete(conversation.id)}
+              onSelect={(e) => {
+                e.preventDefault();
+                onDelete(conversation.id);
+              }}
             >
-              <Trash2 />
-              채팅 삭제
+              삭제
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
