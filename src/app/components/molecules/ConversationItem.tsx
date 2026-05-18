@@ -1,5 +1,6 @@
 import { useState } from "react";
-import { MoreHorizontal } from "lucide-react";
+import { MoreHorizontal, Pin, PinOff } from "lucide-react";
+import { useDrag } from "react-dnd";
 import { Button } from "@/app/components/ui/button";
 import {
   Dialog,
@@ -12,11 +13,14 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/app/components/ui/dropdown-menu";
 import { Input } from "@/app/components/ui/input";
 import { cn } from "@/app/lib/utils";
 import type { Conversation } from "@/app/types/chat";
+
+export const DRAG_TYPE_CONVERSATION = "CONVERSATION_ITEM";
 
 type Props = {
   conversation: Conversation;
@@ -24,6 +28,8 @@ type Props = {
   onClick: () => void;
   onRename: (id: string, title: string) => void;
   onDelete: (id: string) => void;
+  onPin: (id: string) => void;
+  onUnpin: (id: string) => void;
 };
 
 export function ConversationItem({
@@ -32,9 +38,19 @@ export function ConversationItem({
   onClick,
   onRename,
   onDelete,
+  onPin,
+  onUnpin,
 }: Props) {
   const [renameOpen, setRenameOpen] = useState(false);
   const [renameTitle, setRenameTitle] = useState(conversation.title);
+
+  const [{ isDragging }, drag] = useDrag({
+    type: DRAG_TYPE_CONVERSATION,
+    item: { id: conversation.id },
+    collect: (monitor) => ({
+      isDragging: monitor.isDragging(),
+    }),
+  });
 
   const openRename = () => {
     setRenameTitle(conversation.title);
@@ -51,9 +67,13 @@ export function ConversationItem({
   return (
     <>
       <div
+        ref={(node) => {
+          drag(node)
+        }}
         className={cn(
-          "relative flex items-center w-full rounded-lg",
-          isActive && "bg-white shadow-sm"
+          "relative flex items-center w-full rounded-lg cursor-grab active:cursor-grabbing",
+          isActive && "bg-white shadow-sm",
+          isDragging && "opacity-40"
         )}
       >
         <button
@@ -64,6 +84,9 @@ export function ConversationItem({
             isActive ? "text-[#2563EB]" : "text-foreground hover:bg-accent/50"
           )}
         >
+          {conversation.pinned && (
+            <Pin className="inline size-3 mr-1.5 text-[#2563EB] -mt-0.5" />
+          )}
           {conversation.title}
         </button>
 
@@ -80,6 +103,28 @@ export function ConversationItem({
             </button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" side="bottom" className="w-44 z-[200]">
+            {conversation.pinned ? (
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  onUnpin(conversation.id);
+                }}
+              >
+                <PinOff className="size-3.5 mr-2" />
+                고정 해제
+              </DropdownMenuItem>
+            ) : (
+              <DropdownMenuItem
+                onSelect={(e) => {
+                  e.preventDefault();
+                  onPin(conversation.id);
+                }}
+              >
+                <Pin className="size-3.5 mr-2" />
+                고정하기
+              </DropdownMenuItem>
+            )}
+            <DropdownMenuSeparator />
             <DropdownMenuItem
               onSelect={(e) => {
                 e.preventDefault();

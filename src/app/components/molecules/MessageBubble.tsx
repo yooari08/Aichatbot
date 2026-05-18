@@ -1,4 +1,4 @@
-import { ThumbsUp, ThumbsDown, Copy, Check, FileText } from "lucide-react";
+import { ThumbsUp, ThumbsDown, Copy, Check, FileText, Mail } from "lucide-react";
 import { Button } from "@/app/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/components/ui/tooltip";
 import { BotBadge } from "@/app/components/atoms/BotBadge";
@@ -52,9 +52,10 @@ type Props = {
   copiedId: string | null;
   onLike: (id: string, v: boolean) => void;
   onCopy: (id: string, text: string) => void;
+  onEmail: (text: string) => void;
 };
 
-export function MessageBubble({ message, liked, copiedId, onLike, onCopy }: Props) {
+export function MessageBubble({ message, liked, copiedId, onLike, onCopy, onEmail }: Props) {
   const isBot = message.sender === "bot";
   const isCopied = copiedId === message.id;
   const timeLabel = formatMessageTime(message.timestamp);
@@ -115,6 +116,9 @@ export function MessageBubble({ message, liked, copiedId, onLike, onCopy }: Prop
           activeClassName="text-[#166534] bg-[#DCFCE7]"
         >
           {isCopied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+        </ActionButton>
+        <ActionButton tooltip="이메일로 공유" onClick={() => onEmail(message.text)}>
+          <Mail className="size-3.5" />
         </ActionButton>
       </div>
     </div>

@@ -16,6 +16,7 @@ export interface Conversation {
   group: ConversationGroup;
   category: Category;
   messages: Message[];
+  pinned?: boolean;
 }
 
 export const CONVERSATION_GROUPS: { key: ConversationGroup; label: string }[] = [

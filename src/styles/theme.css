@@ -1,6 +1,7 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
+  --font-suit: 'SUIT Variable', 'SUIT', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
   --font-size: 16px;
   --background: #F8FAFC;
   --foreground: oklch(0.145 0 0);
@@ -79,6 +80,7 @@
 }
 
 @theme inline {
+  --font-sans: var(--font-suit);
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -125,8 +127,8 @@
   }
 
   body {
-    @apply bg-background text-foreground;
-    font-family: 'Noto Sans KR', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Apple SD Gothic Neo', sans-serif;
+    @apply bg-background text-foreground font-sans;
+    font-family: var(--font-suit);
   }
 
   /**

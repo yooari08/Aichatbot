@@ -1,8 +1,10 @@
-﻿import { useState } from "react";
-import { Plus } from "lucide-react";
+import { useState } from "react";
+import { Link } from "react-router";
+import { Plus, Pin, ChevronLeft } from "lucide-react";
+import { useDrop } from "react-dnd";
 import { Button } from "@/app/components/ui/button";
 import { BotBadge } from "@/app/components/atoms/BotBadge";
-import { ConversationItem } from "@/app/components/molecules/ConversationItem";
+import { ConversationItem, DRAG_TYPE_CONVERSATION } from "@/app/components/molecules/ConversationItem";
 import { SearchInput } from "@/app/components/molecules/SearchInput";
 import { SidebarPopoverMenu } from "@/app/components/molecules/SidebarPopoverMenu";
 import { SidebarUserProfile } from "@/app/components/molecules/SidebarUserProfile";
@@ -15,6 +17,7 @@ import {
 } from "@/app/components/ui/dialog";
 import { Input } from "@/app/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
+import { cn } from "@/app/lib/utils";
 import { CONVERSATION_GROUPS } from "@/app/types/chat";
 import { CHAT_CURRENT_USER } from "@/app/constants/chatData";
 import type { Conversation } from "@/app/types/chat";
@@ -28,7 +31,55 @@ type Props = {
   onRenameConversation: (id: string, title: string) => void;
   onDeleteConversation: (id: string) => void;
   onNewChat: () => void;
+  onPin: (id: string) => void;
+  onUnpin: (id: string) => void;
+  onToggle: () => void;
 };
+
+function PinnedDropZone({
+  onDrop,
+  children,
+  isEmpty,
+}: {
+  onDrop: (id: string) => void;
+  children: React.ReactNode;
+  isEmpty: boolean;
+}) {
+  const [{ isOver }, drop] = useDrop({
+    accept: DRAG_TYPE_CONVERSATION,
+    drop: (item: { id: string }) => onDrop(item.id),
+    collect: (monitor) => ({
+      isOver: monitor.isOver(),
+    }),
+  });
+
+  return (
+    <div
+      ref={(node) => {
+        drop(node)
+      }}
+      className={cn(
+        "min-h-[44px] rounded-lg border-2 border-dashed transition-colors",
+        isOver
+          ? "border-[#2563EB] bg-[#EFF6FF]"
+          : isEmpty
+          ? "border-[#CBD5E1] bg-[#F8FAFF]"
+          : "border-transparent"
+      )}
+    >
+      {isEmpty ? (
+        <p className={cn(
+          "text-[11px] text-center py-3 px-2 transition-colors",
+          isOver ? "text-[#2563EB] font-medium" : "text-muted-foreground"
+        )}>
+          {isOver ? "여기에 놓아 고정하세요" : "채팅을 드래그하여 고정하세요"}
+        </p>
+      ) : (
+        children
+      )}
+    </div>
+  );
+}
 
 export function ChatSidebar({
   conversations,
@@ -37,6 +88,9 @@ export function ChatSidebar({
   onRenameConversation,
   onDeleteConversation,
   onNewChat,
+  onPin,
+  onUnpin,
+  onToggle,
 }: Props) {
   const [search, setSearch] = useState("");
   const [chatbotTitle, setChatbotTitle] = useState(DEFAULT_CHATBOT_TITLE);
@@ -47,6 +101,14 @@ export function ChatSidebar({
   const filtered = conversations.filter(
     (c) => search === "" || c.title.includes(search)
   );
+
+  const pinnedConvs = filtered.filter((c) => c.pinned);
+  const unpinnedConvs = filtered.filter((c) => !c.pinned);
+
+  const handleDropToPin = (id: string) => {
+    const conv = conversations.find((c) => c.id === id);
+    if (conv && !conv.pinned) onPin(id);
+  };
 
   const openHeaderRename = () => {
     setRenameTitle(chatbotTitle);
@@ -67,14 +129,15 @@ export function ChatSidebar({
   };
 
   return (
-    <aside className="w-[260px] flex-shrink-0 flex flex-col bg-[#F8F8F9] border-r border-[#E5E5E5]">
+    <aside className="w-[260px] h-full flex-shrink-0 flex flex-col bg-[#F8F8F9] border-r border-[#E5E5E5]">
       {/* Header */}
       <div className="bg-white border-b border-[#E5E5E5] px-4 py-3 flex-shrink-0 flex flex-col gap-3">
+        <div className="flex items-center gap-1">
         <Popover open={headerPopoverOpen} onOpenChange={setHeaderPopoverOpen}>
           <PopoverTrigger asChild>
             <button
               type="button"
-              className="flex items-center justify-center gap-2 w-full font-bold text-[15px] text-foreground rounded-md hover:bg-[#F8F8F9] py-1 transition-colors"
+              className="flex-1 flex items-center justify-center gap-2 font-bold text-[15px] text-foreground rounded-md hover:bg-[#F8F8F9] py-1 transition-colors"
             >
               <BotBadge />
               <span className="align-middle">{chatbotTitle}</span>
@@ -93,6 +156,15 @@ export function ChatSidebar({
             />
           </PopoverContent>
         </Popover>
+        <button
+          type="button"
+          onClick={onToggle}
+          className="flex size-7 flex-shrink-0 items-center justify-center rounded-md text-muted-foreground hover:bg-[#F0F2F6] hover:text-foreground"
+          aria-label="사이드바 접기"
+        >
+          <ChevronLeft className="size-4" />
+        </button>
+        </div>
 
         <Button
           variant="outline"
@@ -108,8 +180,33 @@ export function ChatSidebar({
 
       {/* Conversation list */}
       <nav className="flex-1 overflow-y-auto px-2 py-2">
+        {/* Pinned section */}
+        <div className="mb-3">
+          <div className="flex items-center gap-1.5 px-3 py-1">
+            <Pin className="size-3 text-muted-foreground" />
+            <span className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              고정됨
+            </span>
+          </div>
+          <PinnedDropZone onDrop={handleDropToPin} isEmpty={pinnedConvs.length === 0}>
+            {pinnedConvs.map((conv) => (
+              <ConversationItem
+                key={conv.id}
+                conversation={conv}
+                isActive={activeId === conv.id}
+                onClick={() => onSelectConversation(conv.id)}
+                onRename={onRenameConversation}
+                onDelete={onDeleteConversation}
+                onPin={onPin}
+                onUnpin={onUnpin}
+              />
+            ))}
+          </PinnedDropZone>
+        </div>
+
+        {/* Grouped conversations (unpinned) */}
         {CONVERSATION_GROUPS.map(({ key, label }) => {
-          const group = filtered.filter((c) => c.group === key);
+          const group = unpinnedConvs.filter((c) => c.group === key);
           if (group.length === 0) return null;
           return (
             <div key={key} className="mb-3">
@@ -124,11 +221,14 @@ export function ChatSidebar({
                   onClick={() => onSelectConversation(conv.id)}
                   onRename={onRenameConversation}
                   onDelete={onDeleteConversation}
+                  onPin={onPin}
+                  onUnpin={onUnpin}
                 />
               ))}
             </div>
           );
         })}
+
         {filtered.length === 0 && (
           <p className="text-[12px] text-muted-foreground text-center py-8">검색 결과 없음</p>
         )}
@@ -152,12 +252,12 @@ export function ChatSidebar({
             },
           ]}
         />
-        <a
-          href="/admin"
+        <Link
+          to="/admin"
           className="mt-2 block text-center text-[11px] text-[#2563EB] border border-dashed border-[#2563EB] rounded-lg py-1.5 bg-[#EEF2FF] hover:bg-[#E0E8FF] transition-colors"
         >
           어드민 콘솔 →
-        </a>
+        </Link>
       </div>
 
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>

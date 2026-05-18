@@ -65,7 +65,7 @@ export function AnalyticsDashboard() {
           <CardTitle className="text-[13px] font-bold">개선 필요 질문</CardTitle>
         </CardHeader>
         <CardContent className="flex flex-col gap-0">
-          {IMPROVEMENT_QUESTIONS.map((q, i) => (
+          {IMPROVEMENT_QUESTIONS.map((q) => (
             <div
               key={q.label}
               className="flex items-center justify-between py-2 border-b border-[#F5F5F5] last:border-0"

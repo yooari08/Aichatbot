@@ -112,6 +112,18 @@ export function useChat() {
     setActiveId((prev) => (prev === id ? null : prev));
   }, []);
 
+  const pinConversation = useCallback((id: string) => {
+    setConversations((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, pinned: true } : c))
+    );
+  }, []);
+
+  const unpinConversation = useCallback((id: string) => {
+    setConversations((prev) =>
+      prev.map((c) => (c.id === id ? { ...c, pinned: false } : c))
+    );
+  }, []);
+
   return {
     conversations,
     activeId,
@@ -125,6 +137,8 @@ export function useChat() {
     selectConversation: setActiveId,
     renameConversation,
     deleteConversation,
+    pinConversation,
+    unpinConversation,
     handleSend,
     handleSuggestion,
     handleLike,
