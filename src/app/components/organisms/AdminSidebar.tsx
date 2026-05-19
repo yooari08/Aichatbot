@@ -3,7 +3,10 @@ import { ChevronDown, ChevronRight } from "lucide-react";
 import { cn } from "@/app/lib/utils";
 import { BotBadge } from "@/app/components/atoms/BotBadge";
 import { SidebarUserProfile } from "@/app/components/molecules/SidebarUserProfile";
-import { ADMIN_CURRENT_USER, NAV } from "@/app/constants/adminData";
+import { useAuth } from "@/app/contexts/AuthContext";
+import { useLogout } from "@/app/hooks/useLogout";
+import { emailToDisplayName, emailToInitials, getRoleLabel } from "@/app/lib/auth/userDisplay";
+import { NAV } from "@/app/constants/adminData";
 import type { AdminView } from "@/app/types/admin";
 
 export type { AdminView };
@@ -21,6 +24,9 @@ export function AdminSidebar({
   toggleGroup,
   setActiveView,
 }: AdminSidebarProps) {
+  const { user } = useAuth();
+  const handleLogout = useLogout();
+
   return (
     <aside className="w-[240px] flex-shrink-0 flex flex-col bg-[#F8F8F9] border-r border-[#E5E5E5]">
       <div className="bg-white border-b border-[#E5E5E5] px-4 py-4 flex-shrink-0">
@@ -30,62 +36,80 @@ export function AdminSidebar({
         </div>
       </div>
 
-      <nav className="flex-1 overflow-y-auto px-2 py-3">
+      <nav className="flex-1 overflow-y-auto px-2 py-2">
         {NAV.map((section) => (
-          <div key={section.label}>
-            <div className="text-[10px] font-bold uppercase tracking-wider text-[#878B95] px-3 py-2 mt-2">
+          <div key={section.label} className="mb-3">
+            <div className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground px-3 py-1">
               {section.label}
             </div>
             {section.groups.map((group) => {
               const isExpanded = expandedGroups.has(group.key);
-              const isGroupActive =
-                group.subs.length === 0
-                  ? (activeView as string) === group.key
-                  : group.subs.some((s) => s.key === activeView);
+              const isLeafActive =
+                group.subs.length === 0 && (activeView as string) === group.key;
 
               return (
                 <div key={group.key}>
-                  <button
-                    onClick={() => {
-                      if (group.subs.length > 0) {
-                        toggleGroup(group.key);
-                      } else {
-                        setActiveView(group.key as AdminView);
-                      }
-                    }}
-                    className={cn(
-                      "w-full text-left flex items-center justify-between px-3 py-2 rounded-md text-[13px] font-semibold",
-                      isGroupActive ? "text-[#2563EB]" : "text-[#0A0A0A]"
-                    )}
-                  >
-                    {group.label}
-                    {group.subs.length > 0 &&
-                      (isExpanded ? (
-                        <ChevronDown className="w-3.5 h-3.5 text-[#878B95]" />
+                  {group.subs.length > 0 ? (
+                    <button
+                      type="button"
+                      onClick={() => toggleGroup(group.key)}
+                      className="w-full text-left flex items-center justify-between px-3 py-1.5 rounded-lg text-[12px] font-medium text-muted-foreground hover:text-foreground transition-colors"
+                    >
+                      {group.label}
+                      {isExpanded ? (
+                        <ChevronDown className="size-3.5 shrink-0" />
                       ) : (
-                        <ChevronRight className="w-3.5 h-3.5 text-[#878B95]" />
-                      ))}
-                  </button>
+                        <ChevronRight className="size-3.5 shrink-0" />
+                      )}
+                    </button>
+                  ) : (
+                    <div
+                      className={cn(
+                        "relative flex items-center w-full rounded-lg",
+                        isLeafActive && "bg-white"
+                      )}
+                    >
+                      <button
+                        type="button"
+                        onClick={() => setActiveView(group.key as AdminView)}
+                        className={cn(
+                          "flex-1 min-w-0 w-full text-left px-3 py-2.5 rounded-lg text-[14px] font-normal truncate transition-colors",
+                          isLeafActive
+                            ? "text-[#2563EB]"
+                            : "text-foreground hover:bg-accent/50"
+                        )}
+                      >
+                        {group.label}
+                      </button>
+                    </div>
+                  )}
 
-                  {isExpanded && group.subs.length > 0 && (
-                    <>
-                      {group.subs.map((sub) => (
-                        <button
+                  {isExpanded &&
+                    group.subs.map((sub) => {
+                      const isActive = activeView === sub.key;
+                      return (
+                        <div
                           key={`${group.key}-${sub.key}`}
-                          onClick={() => setActiveView(sub.key)}
                           className={cn(
-                            "w-full text-left flex items-center gap-1.5 px-3 py-1.5 pl-6 rounded-md text-[12px] transition-all",
-                            activeView === sub.key
-                              ? "bg-white text-[#2563EB] font-semibold border-l-[3px] border-[#2563EB] pl-[21px] shadow-sm"
-                              : "text-[#444] hover:bg-[#F0F2F6]"
+                            "relative flex items-center w-full rounded-lg",
+                            isActive && "bg-white"
                           )}
                         >
-                          <span className="text-[#878B95] mr-0.5">·</span>
-                          {sub.label}
-                        </button>
-                      ))}
-                    </>
-                  )}
+                          <button
+                            type="button"
+                            onClick={() => setActiveView(sub.key)}
+                            className={cn(
+                              "flex-1 min-w-0 w-full text-left px-3 py-2.5 rounded-lg text-[14px] font-normal truncate transition-colors",
+                              isActive
+                                ? "text-[#2563EB]"
+                                : "text-foreground hover:bg-accent/50"
+                            )}
+                          >
+                            {sub.label}
+                          </button>
+                        </div>
+                      );
+                    })}
                 </div>
               );
             })}
@@ -94,13 +118,16 @@ export function AdminSidebar({
       </nav>
 
       <div className="border-t border-[#E5E5E5] bg-white px-4 py-3 flex-shrink-0">
-        <SidebarUserProfile
-          initials={ADMIN_CURRENT_USER.initials}
-          name={ADMIN_CURRENT_USER.name}
-          subtitle={ADMIN_CURRENT_USER.role}
-          subtitleClassName="text-[#dc2626] font-semibold"
-          avatarVariant="dark"
-        />
+        {user && (
+          <SidebarUserProfile
+            initials={emailToInitials(user.email)}
+            name={emailToDisplayName(user.email)}
+            subtitle={getRoleLabel(user.role)}
+            subtitleClassName="text-[#dc2626] font-semibold"
+            avatarVariant="dark"
+            menuItems={[{ label: "로그아웃", onClick: handleLogout }]}
+          />
+        )}
         <Link
           to="/"
           className="mt-2 block text-center text-[11px] text-[#2563EB] border border-dashed border-[#2563EB] rounded-lg py-1.5 bg-[#EEF2FF] hover:bg-[#E0E8FF] transition-colors"

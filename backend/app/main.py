@@ -7,6 +7,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from app.core.logging import get_logger as get_app_logger
+
 from app.api.router import api_router
 from app.core.config import Settings, get_settings
 from app.core.logging import configure_logging, get_logger
@@ -28,7 +30,12 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     from app.db.session import get_session_factory
 
     async with get_session_factory()() as session:
-        await AuthService(session, settings).bootstrap_admin_if_needed()
+        auth_service = AuthService(session, settings)
+        await auth_service.bootstrap_admin_if_needed()
+        from app.repositories.user_repository import UserRepository
+        from app.services.dev_users import seed_dev_test_users
+
+        await seed_dev_test_users(settings, UserRepository(session))
         await session.commit()
     yield
     await close_db()
@@ -77,6 +84,21 @@ def create_app() -> FastAPI:
                 errors=exc.errors(),
             ).model_dump(),
         )
+
+    if not settings.is_production:
+
+        @app.exception_handler(Exception)
+        async def unhandled_exception_handler(
+            request: Request, exc: Exception
+        ) -> JSONResponse:
+            get_app_logger(__name__).exception("Unhandled error on %s", request.url.path)
+            return JSONResponse(
+                status_code=500,
+                content=ErrorResponse(
+                    detail="Internal server error",
+                    code="internal_error",
+                ).model_dump(),
+            )
 
     return app
 

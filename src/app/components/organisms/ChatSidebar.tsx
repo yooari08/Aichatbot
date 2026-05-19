@@ -18,8 +18,10 @@ import {
 import { Input } from "@/app/components/ui/input";
 import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
 import { cn } from "@/app/lib/utils";
+import { useAuth } from "@/app/contexts/AuthContext";
+import { useLogout } from "@/app/hooks/useLogout";
+import { emailToDisplayName, emailToInitials, getRoleLabel } from "@/app/lib/auth/userDisplay";
 import { CONVERSATION_GROUPS } from "@/app/types/chat";
-import { CHAT_CURRENT_USER } from "@/app/constants/chatData";
 import type { Conversation } from "@/app/types/chat";
 
 const DEFAULT_CHATBOT_TITLE = "사내 챗봇";
@@ -92,6 +94,8 @@ export function ChatSidebar({
   onUnpin,
   onToggle,
 }: Props) {
+  const { user } = useAuth();
+  const handleLogout = useLogout();
   const [search, setSearch] = useState("");
   const [chatbotTitle, setChatbotTitle] = useState(DEFAULT_CHATBOT_TITLE);
   const [renameOpen, setRenameOpen] = useState(false);
@@ -236,28 +240,36 @@ export function ChatSidebar({
 
       {/* Footer */}
       <div className="border-t border-[#E5E5E5] bg-white px-4 py-3 flex-shrink-0">
-        <SidebarUserProfile
-          initials={CHAT_CURRENT_USER.initials}
-          name={CHAT_CURRENT_USER.name}
-          subtitle={CHAT_CURRENT_USER.role}
-          avatarVariant="primary"
-          menuItems={[
-            {
-              label: "공지사항",
-              onClick: () => window.alert("공지사항 기능은 준비 중입니다."),
-            },
-            {
-              label: "의견 보내기",
-              onClick: () => window.alert("의견 보내기 기능은 준비 중입니다."),
-            },
-          ]}
-        />
-        <Link
-          to="/admin"
-          className="mt-2 block text-center text-[11px] text-[#2563EB] border border-dashed border-[#2563EB] rounded-lg py-1.5 bg-[#EEF2FF] hover:bg-[#E0E8FF] transition-colors"
-        >
-          어드민 콘솔 →
-        </Link>
+        {user && (
+          <SidebarUserProfile
+            initials={emailToInitials(user.email)}
+            name={emailToDisplayName(user.email)}
+            subtitle={getRoleLabel(user.role)}
+            avatarVariant="primary"
+            menuItems={[
+              {
+                label: "공지사항",
+                onClick: () => window.alert("공지사항 기능은 준비 중입니다."),
+              },
+              {
+                label: "의견 보내기",
+                onClick: () => window.alert("의견 보내기 기능은 준비 중입니다."),
+              },
+              {
+                label: "로그아웃",
+                onClick: handleLogout,
+              },
+            ]}
+          />
+        )}
+        {user?.role === "admin" && (
+          <Link
+            to="/admin"
+            className="mt-2 block text-center text-[11px] text-[#2563EB] border border-dashed border-[#2563EB] rounded-lg py-1.5 bg-[#EEF2FF] hover:bg-[#E0E8FF] transition-colors"
+          >
+            어드민 콘솔 →
+          </Link>
+        )}
       </div>
 
       <Dialog open={renameOpen} onOpenChange={setRenameOpen}>

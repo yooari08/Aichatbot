@@ -1,9 +1,12 @@
 node_modules
 dist
+.env.local
+.env
 .claude
 package-lock.json
 
 # Python / backend
+backend/dev.db
 backend/.venv/
 backend/.env
 backend/**/__pycache__/

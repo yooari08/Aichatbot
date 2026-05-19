@@ -11,6 +11,8 @@ type Props = {
   disabled?: boolean;
   className?: string;
   showDisclaimer?: boolean;
+  /** Scroll container 하단에 고정 (채팅 화면) */
+  pinned?: boolean;
 };
 
 export function ChatComposer({
@@ -20,6 +22,7 @@ export function ChatComposer({
   disabled,
   className,
   showDisclaimer = true,
+  pinned = false,
 }: Props) {
   const handleKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -29,7 +32,13 @@ export function ChatComposer({
   };
 
   return (
-    <div className={cn("bg-white px-4 py-3", className)}>
+    <div
+      className={cn(
+        "bg-white px-4 py-3",
+        pinned && "sticky bottom-0 z-10 mt-auto flex-shrink-0",
+        className
+      )}
+    >
       <div
         className={cn(
           "flex items-center justify-center gap-2 align-middle bg-[#F8F8F9] border rounded-xl px-3 py-2 transition-all",

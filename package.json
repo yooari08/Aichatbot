@@ -6,6 +6,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
+    "dev:api": "cd backend && .venv\\Scripts\\uvicorn app.main:app --reload --port 8080",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

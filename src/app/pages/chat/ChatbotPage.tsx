@@ -70,8 +70,13 @@ export default function ChatbotPage() {
           />
         </div>
 
-        {/* Main area */}
-        <div className="flex-1 flex flex-col overflow-hidden relative">
+        {/* Main area — chat view scrolls here, not inside MessageFeed */}
+        <div
+          className={cn(
+            "flex-1 flex flex-col min-h-0 relative",
+            messages.length > 0 ? "overflow-y-auto" : "overflow-hidden"
+          )}
+        >
           {/* Expand button — visible only when sidebar is collapsed */}
           {!sidebarOpen && (
             <button
@@ -100,23 +105,21 @@ export default function ChatbotPage() {
             />
           ) : (
             /* Chat content — centered, max 800px */
-            <div className="flex flex-1 flex-col min-h-0 w-full max-w-[800px] mx-auto">
-              <div className="flex-1 min-h-0 overflow-y-auto">
-                <MessageFeed
-                  messages={messages}
-                  isTyping={isTyping}
-                  likedMessages={likedMessages}
-                  copiedId={copiedId}
-                  onLike={handleLike}
-                  onCopy={handleCopy}
-                />
-              </div>
+            <div className="flex flex-1 flex-col min-h-full w-full max-w-[800px] mx-auto">
+              <MessageFeed
+                messages={messages}
+                isTyping={isTyping}
+                likedMessages={likedMessages}
+                copiedId={copiedId}
+                onLike={handleLike}
+                onCopy={handleCopy}
+              />
               <ChatComposer
                 value={input}
                 onChange={setInput}
                 onSend={handleSend}
                 disabled={isTyping}
-                className="flex-shrink-0"
+                pinned
               />
             </div>
           )}

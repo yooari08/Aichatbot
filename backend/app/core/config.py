@@ -1,8 +1,8 @@
 from functools import lru_cache
-from typing import Literal
+from typing import Annotated, Literal
 
 from pydantic import Field, field_validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 
 class Settings(BaseSettings):
@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"
 
     database_url: str = Field(
-        default="postgresql+asyncpg://aichatbot:aichatbot@localhost:5432/aichatbot",
+        default="sqlite+aiosqlite:///./dev.db",
         description="Async SQLAlchemy database URL",
     )
     chroma_host: str = "localhost"
@@ -36,11 +36,20 @@ class Settings(BaseSettings):
     bootstrap_admin_email: str | None = None
     bootstrap_admin_password: str | None = None
 
+    seed_dev_test_users: bool = True
+    dev_test_user_email: str = "user@test.company.com"
+    dev_test_user_password: str = "TestUser123!"
+    dev_test_admin_email: str = "admin@test.company.com"
+    dev_test_admin_password: str = "TestAdmin123!"
+
     aws_region: str = "ap-northeast-2"
     # Bedrock: use IAM roles in Rancher/K8s; never commit credentials.
     bedrock_model_id: str = "anthropic.claude-sonnet-4-20250514-v1:0"
 
-    cors_origins: list[str] = Field(default_factory=lambda: ["http://localhost:5173"])
+    # NoDecode: .env uses comma-separated URLs, not JSON arrays
+    cors_origins: Annotated[list[str], NoDecode] = Field(
+        default_factory=lambda: ["http://localhost:5173"]
+    )
 
     @field_validator("cors_origins", mode="before")
     @classmethod

@@ -27,14 +27,15 @@ def create_access_token(
     expires_delta: timedelta | None = None,
 ) -> str:
     settings = settings or get_settings()
-    expire = datetime.now(UTC) + (
+    now = datetime.now(UTC)
+    expire = now + (
         expires_delta or timedelta(minutes=settings.jwt_access_token_expire_minutes)
     )
     payload: dict[str, Any] = {
         "sub": str(subject),
         "role": role,
-        "exp": expire,
-        "iat": datetime.now(UTC),
+        "exp": int(expire.timestamp()),
+        "iat": int(now.timestamp()),
     }
     return jwt.encode(payload, settings.jwt_secret_key, algorithm=settings.jwt_algorithm)
 
