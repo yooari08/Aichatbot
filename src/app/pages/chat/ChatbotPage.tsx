@@ -100,20 +100,23 @@ export default function ChatbotPage() {
             />
           ) : (
             /* Chat content — centered, max 800px */
-            <div className="flex-1 flex flex-col overflow-hidden w-full max-w-[800px] mx-auto">
-              <MessageFeed
-                messages={messages}
-                isTyping={isTyping}
-                likedMessages={likedMessages}
-                copiedId={copiedId}
-                onLike={handleLike}
-                onCopy={handleCopy}
-              />
+            <div className="flex flex-1 flex-col min-h-0 w-full max-w-[800px] mx-auto">
+              <div className="flex-1 min-h-0 overflow-y-auto">
+                <MessageFeed
+                  messages={messages}
+                  isTyping={isTyping}
+                  likedMessages={likedMessages}
+                  copiedId={copiedId}
+                  onLike={handleLike}
+                  onCopy={handleCopy}
+                />
+              </div>
               <ChatComposer
                 value={input}
                 onChange={setInput}
                 onSend={handleSend}
                 disabled={isTyping}
+                className="flex-shrink-0"
               />
             </div>
           )}

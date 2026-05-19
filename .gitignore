@@ -2,3 +2,16 @@ node_modules
 dist
 .claude
 package-lock.json
+
+# Python / backend
+backend/.venv/
+backend/.env
+backend/**/__pycache__/
+backend/**/*.pyc
+backend/.pytest_cache/
+backend/.ruff_cache/
+backend/dist/
+backend/*.egg-info/
+
+# Rancher / K8s local secrets
+deploy/rancher/secret.local.yaml

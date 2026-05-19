@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ai-chatbot
+
+resources:
+  - namespace.yaml
+  - configmap-api.yaml
+  - postgres/statefulset.yaml
+  - postgres/service.yaml
+  - chroma/deployment.yaml
+  - chroma/service.yaml
+  - api/deployment.yaml
+  - api/service.yaml
+
+# Apply secrets separately (see secret.example.yaml) — not included by default.
+# - secret.local.yaml
+
+commonLabels:
+  app.kubernetes.io/part-of: ai-chatbot
+  app.kubernetes.io/managed-by: rancher

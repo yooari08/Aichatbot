@@ -64,7 +64,7 @@ export function MessageBubble({ message, liked, copiedId, onLike, onCopy, onEmai
     return (
       <div className="flex flex-col items-end gap-1">
         <div
-          className="max-w-[75%] text-white rounded-2xl rounded-tr-sm px-4 py-2.5 text-[13px] leading-relaxed"
+          className="max-w-[75%] text-white rounded-2xl rounded-tr-sm px-4 py-2.5 text-[16px] leading-relaxed"
           style={{ backgroundColor: BRAND_PRIMARY_RGB }}
         >
           {formatText(message.text)}
@@ -82,17 +82,17 @@ export function MessageBubble({ message, liked, copiedId, onLike, onCopy, onEmai
         <span className="text-[10px] text-[#878B95] ml-1">{timeLabel}</span>
       </div>
 
-      <div className="max-w-[80%] bg-white border border-[#E5E5E5] rounded-2xl rounded-tl-sm px-4 py-3 text-[13px] leading-[1.7] text-foreground shadow-sm">
+      <div className="max-w-[80%] bg-white rounded-2xl rounded-tl-sm pt-3 text-[16px] leading-[1.7] text-foreground">
         {formatText(message.text)}
         {message.source && (
-          <div className="mt-2.5 pt-2.5 border-t border-[#F0F0F0] flex items-center gap-1.5">
-            <FileText className="size-3 text-muted-foreground" />
+          <div className="mt-2.5 flex items-center gap-1.5 rounded-md bg-[#F8F8F9] px-2.5 py-2">
+            <FileText className="size-3 shrink-0 text-muted-foreground" />
             <span className="text-[11px] text-muted-foreground">{message.source}</span>
           </div>
         )}
       </div>
 
-      <div className="flex items-center gap-0.5 mt-0.5 ml-1">
+      <div className="flex items-center gap-0.5">
         <ActionButton
           tooltip="도움이 됐어요"
           onClick={() => onLike(message.id, true)}

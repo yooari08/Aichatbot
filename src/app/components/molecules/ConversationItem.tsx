@@ -72,7 +72,7 @@ export function ConversationItem({
         }}
         className={cn(
           "relative flex items-center w-full rounded-lg cursor-grab active:cursor-grabbing",
-          isActive && "bg-white shadow-sm",
+          isActive && "bg-white",
           isDragging && "opacity-40"
         )}
       >
@@ -80,7 +80,7 @@ export function ConversationItem({
           type="button"
           onClick={onClick}
           className={cn(
-            "flex-1 min-w-0 text-left px-3 py-2.5 pr-9 rounded-lg text-[14px] font-semibold truncate transition-colors",
+            "flex-1 min-w-0 text-left px-3 py-2.5 pr-9 rounded-lg text-[14px] font-normal truncate transition-colors",
             isActive ? "text-[#2563EB]" : "text-foreground hover:bg-accent/50"
           )}
         >

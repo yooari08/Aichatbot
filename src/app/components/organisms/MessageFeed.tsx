@@ -24,7 +24,7 @@ export function MessageFeed({ messages, isTyping, likedMessages, copiedId, onLik
 
   return (
     <>
-      <div className="flex-1 overflow-y-auto px-6 py-4 flex flex-col gap-4">
+      <div className="px-6 py-4 flex flex-col gap-4">
         <AnimatePresence initial={false}>
           {messages.map((msg) => (
             <motion.div
