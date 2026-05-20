@@ -1,26 +1,45 @@
-import { useEffect, useRef, useState } from "react";
-import { AnimatePresence, motion } from "motion/react";
-import { MessageBubble } from "@/app/components/molecules/MessageBubble";
-import { EmailModal } from "@/app/components/molecules/EmailModal";
-import { TypingIndicator } from "@/app/components/atoms/TypingIndicator";
-import type { Message } from "@/app/types/chat";
+import { useEffect, useRef, useState } from 'react'
+import { AnimatePresence, motion } from 'motion/react'
+import { MessageBubble } from '@/app/components/molecules/MessageBubble'
+import { EmailModal } from '@/app/components/molecules/EmailModal'
+import { TypingIndicator } from '@/app/components/atoms/TypingIndicator'
+import type { Message } from '@/app/types/chat'
 
 type Props = {
-  messages: Message[];
-  isTyping: boolean;
-  likedMessages: Record<string, boolean | null>;
-  copiedId: string | null;
-  onLike: (id: string, v: boolean) => void;
-  onCopy: (id: string, text: string) => void;
-};
+  messages: Message[]
+  isTyping: boolean
+  likedMessages: Record<string, boolean | null>
+  copiedId: string | null
+  onLike: (id: string, v: boolean) => void
+  onCopy: (id: string, text: string) => void
+}
 
-export function MessageFeed({ messages, isTyping, likedMessages, copiedId, onLike, onCopy }: Props) {
-  const bottomRef = useRef<HTMLDivElement>(null);
-  const [emailText, setEmailText] = useState<string | null>(null);
+export function MessageFeed({
+  messages,
+  isTyping,
+  likedMessages,
+  copiedId,
+  onLike,
+  onCopy,
+}: Props) {
+  const bottomRef = useRef<HTMLDivElement>(null)
+  const prevMessageCountRef = useRef(messages.length)
+  const [emailText, setEmailText] = useState<string | null>(null)
+
+  const lastMessage = messages[messages.length - 1]
+  const lastMessageFingerprint = lastMessage
+    ? `${lastMessage.id}:${lastMessage.text.length}`
+    : ''
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isTyping]);
+    const isNewMessage = messages.length !== prevMessageCountRef.current
+    prevMessageCountRef.current = messages.length
+
+    bottomRef.current?.scrollIntoView({
+      behavior: isNewMessage || isTyping ? 'smooth' : 'auto',
+      block: 'end',
+    })
+  }, [messages.length, isTyping, lastMessageFingerprint])
 
   return (
     <>
@@ -51,14 +70,16 @@ export function MessageFeed({ messages, isTyping, likedMessages, copiedId, onLik
           </motion.div>
         )}
 
-        <div ref={bottomRef} />
+        <div ref={bottomRef} aria-hidden />
       </div>
 
       <EmailModal
         open={emailText !== null}
-        onOpenChange={(open) => { if (!open) setEmailText(null); }}
-        messageText={emailText ?? ""}
+        onOpenChange={(open) => {
+          if (!open) setEmailText(null)
+        }}
+        messageText={emailText ?? ''}
       />
     </>
-  );
+  )
 }

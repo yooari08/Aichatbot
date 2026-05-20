@@ -14,5 +14,8 @@ data:
   JWT_ALGORITHM: HS256
   JWT_ACCESS_TOKEN_EXPIRE_MINUTES: "30"
   AWS_REGION: ap-northeast-2
-  BEDROCK_MODEL_ID: anthropic.claude-sonnet-4-20250514-v1:0
+  BEDROCK_MODEL_ID: anthropic.claude-sonnet-4-6
+  BEDROCK_MOCK_ENABLED: "false"
+  CONVERSATION_RETENTION_DAYS: "90"
+  DOCUMENTS_STORAGE_PATH: /data/documents
   CORS_ORIGINS: http://localhost:5173

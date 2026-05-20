@@ -16,6 +16,7 @@ from app.db.bootstrap import create_tables
 from app.db.session import close_db, init_db
 from app.schemas.common import ErrorResponse
 from app.services.auth_service import AuthService
+from app.services.retention_service import purge_expired_conversations
 
 logger = get_logger(__name__)
 
@@ -36,6 +37,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
         from app.services.dev_users import seed_dev_test_users
 
         await seed_dev_test_users(settings, UserRepository(session))
+        await purge_expired_conversations(session, settings)
         await session.commit()
     yield
     await close_db()

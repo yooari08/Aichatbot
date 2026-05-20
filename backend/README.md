@@ -54,6 +54,22 @@ alembic upgrade head
 
 Roles: `user`, `admin` (RBAC via `require_roles()` dependency).
 
+`users.external_id` — reserved for upcoming SAML/OIDC (`sub`).
+
+## Chat API
+
+| Method | Path | Description |
+|--------|------|-------------|
+| GET | `/api/v1/conversations` | List conversations (last 90 days retained) |
+| GET | `/api/v1/conversations/{id}` | Conversation + messages |
+| PATCH | `/api/v1/conversations/{id}` | Rename / pin |
+| DELETE | `/api/v1/conversations/{id}` | Delete |
+| POST | `/api/v1/chat/messages` | **SSE** stream — send message, receive deltas |
+
+SSE event types: `conversation`, `user_message`, `delta`, `done`.
+
+Bedrock model default: `anthropic.claude-sonnet-4-6`. Set `BEDROCK_MOCK_ENABLED=true` for local dev without AWS.
+
 ## Tests
 
 ```bash

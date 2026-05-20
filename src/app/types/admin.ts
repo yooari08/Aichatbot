@@ -26,11 +26,14 @@ export interface AdminUser {
   active: boolean;
 }
 
+import type { LucideIcon } from "lucide-react";
+
 export type NavSubItem = { key: AdminView; label: string };
 
 export type NavGroup = {
   key: string;
   label: string;
+  icon?: LucideIcon;
   subs: NavSubItem[];
 };
 

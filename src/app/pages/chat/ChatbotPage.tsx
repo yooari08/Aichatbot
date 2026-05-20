@@ -1,13 +1,13 @@
-import { useEffect, useState } from "react";
-import { ChevronRight } from "lucide-react";
-import { DndProvider } from "react-dnd";
-import { HTML5Backend } from "react-dnd-html5-backend";
-import { ChatSidebar } from "@/app/components/organisms/ChatSidebar";
-import { WelcomeScreen } from "@/app/components/organisms/WelcomeScreen";
-import { MessageFeed } from "@/app/components/organisms/MessageFeed";
-import { ChatComposer } from "@/app/components/organisms/ChatComposer";
-import { cn } from "@/app/lib/utils";
-import { useChat } from "./useChat";
+import { useEffect, useState } from 'react'
+import { DndProvider } from 'react-dnd'
+import { HTML5Backend } from 'react-dnd-html5-backend'
+import { ChatSidebar } from '@/app/components/organisms/ChatSidebar'
+import { WelcomeScreen } from '@/app/components/organisms/WelcomeScreen'
+import { MessageFeed } from '@/app/components/organisms/MessageFeed'
+import { ChatComposer } from '@/app/components/organisms/ChatComposer'
+import { Skeleton } from '@/app/components/ui/skeleton'
+import { cn } from '@/app/lib/utils'
+import { useChat } from './useChat'
 
 const COLLAPSE_BREAKPOINT = 1200;
 
@@ -19,6 +19,7 @@ export default function ChatbotPage() {
     input,
     setInput,
     isTyping,
+    isLoadingList,
     likedMessages,
     copiedId,
     newChat,
@@ -50,46 +51,35 @@ export default function ChatbotPage() {
   return (
     <DndProvider backend={HTML5Backend}>
       <div className="h-full flex overflow-hidden bg-white">
-        {/* Sidebar wrapper — width animates open/closed */}
-        <div
-          className={cn(
-            "flex-shrink-0 overflow-hidden transition-[width] duration-200",
-            sidebarOpen ? "w-[260px]" : "w-0"
-          )}
-        >
-          <ChatSidebar
-            conversations={conversations}
-            activeId={activeId}
-            onSelectConversation={selectConversation}
-            onRenameConversation={renameConversation}
-            onDeleteConversation={deleteConversation}
-            onNewChat={newChat}
-            onPin={pinConversation}
-            onUnpin={unpinConversation}
-            onToggle={() => setSidebarOpen(false)}
-          />
-        </div>
+        {/* Sidebar — self-manages width via collapsed prop */}
+        <ChatSidebar
+          conversations={conversations}
+          activeId={activeId}
+          onSelectConversation={selectConversation}
+          onRenameConversation={renameConversation}
+          onDeleteConversation={deleteConversation}
+          onNewChat={newChat}
+          onPin={pinConversation}
+          onUnpin={unpinConversation}
+          collapsed={!sidebarOpen}
+          isLoadingList={isLoadingList}
+          onToggle={() => setSidebarOpen((v) => !v)}
+        />
 
         {/* Main area — chat view scrolls here, not inside MessageFeed */}
         <div
           className={cn(
-            "flex-1 flex flex-col min-h-0 relative",
-            messages.length > 0 ? "overflow-y-auto" : "overflow-hidden"
+            'flex-1 flex flex-col min-h-0 relative',
+            messages.length > 0 ? 'overflow-y-auto' : 'overflow-hidden'
           )}
         >
-          {/* Expand button — visible only when sidebar is collapsed */}
-          {!sidebarOpen && (
-            <button
-              type="button"
-              onClick={() => setSidebarOpen(true)}
-              className="absolute top-3 left-3 z-10 flex size-8 items-center justify-center rounded-lg border border-[#E5E5E5] bg-white shadow-sm hover:bg-[#F8F8F9] transition-colors"
-              aria-label="사이드바 펼치기"
-            >
-              <ChevronRight className="size-4 text-foreground" />
-            </button>
-          )}
-
-          {messages.length === 0 ? (
+          {isLoadingList && messages.length === 0 ? (
+            <div className="flex flex-1 flex-col gap-4 px-8 py-10 max-w-[800px] mx-auto w-full">
+              <Skeleton className="h-4 w-32" />
+              <Skeleton className="h-16 w-3/4 ml-auto rounded-2xl" />
+              <Skeleton className="h-24 w-4/5 rounded-2xl" />
+            </div>
+          ) : messages.length === 0 ? (
             <WelcomeScreen
               onSend={handleSuggestion}
               composer={

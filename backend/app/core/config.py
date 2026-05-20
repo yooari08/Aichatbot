@@ -44,7 +44,13 @@ class Settings(BaseSettings):
 
     aws_region: str = "ap-northeast-2"
     # Bedrock: use IAM roles in Rancher/K8s; never commit credentials.
-    bedrock_model_id: str = "anthropic.claude-sonnet-4-20250514-v1:0"
+    bedrock_model_id: str = "anthropic.claude-sonnet-4-6"
+    bedrock_max_tokens: int = 4096
+    bedrock_temperature: float = 0.3
+    bedrock_mock_enabled: bool = True
+
+    conversation_retention_days: int = 90
+    documents_storage_path: str = "/data/documents"
 
     # NoDecode: .env uses comma-separated URLs, not JSON arrays
     cors_origins: Annotated[list[str], NoDecode] = Field(

@@ -2,7 +2,7 @@ from app.core.config import Settings
 from app.core.logging import get_logger
 from app.db.base import Base
 from app.db.session import get_engine
-from app.models import User  # noqa: F401 — register models with metadata
+from app.models import Conversation, Message, User  # noqa: F401 — register models
 
 logger = get_logger(__name__)
 
