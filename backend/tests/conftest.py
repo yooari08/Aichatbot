@@ -15,7 +15,7 @@ os.environ.setdefault("SEED_DEV_TEST_USERS", "true")
 from app.core.config import get_settings
 from app.db.base import Base
 from app.db.session import close_db, get_engine, get_session_factory, init_db
-from app.models import Conversation, Message, User  # noqa: F401
+from app.models import Conversation, Document, IndexJob, Message, User  # noqa: F401
 from app.repositories.user_repository import UserRepository
 from app.services.dev_users import seed_dev_test_users
 

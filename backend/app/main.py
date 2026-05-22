@@ -12,7 +12,7 @@ from app.core.logging import get_logger as get_app_logger
 from app.api.router import api_router
 from app.core.config import Settings, get_settings
 from app.core.logging import configure_logging, get_logger
-from app.db.bootstrap import create_tables
+from app.db.bootstrap import prepare_database
 from app.db.session import close_db, init_db
 from app.schemas.common import ErrorResponse
 from app.services.auth_service import AuthService
@@ -27,7 +27,7 @@ async def lifespan(app: FastAPI) -> AsyncIterator[None]:
     configure_logging(settings)
     logger.info("Starting %s (%s)", settings.app_name, settings.app_env)
     await init_db(settings)
-    await create_tables(settings)
+    await prepare_database(settings)
     from app.db.session import get_session_factory
 
     async with get_session_factory()() as session:

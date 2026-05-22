@@ -23,19 +23,29 @@ class BedrockService:
         self,
         *,
         messages: list[dict[str, str]],
+        rag_context: str | None = None,
     ) -> AsyncIterator[str]:
         if self._settings.bedrock_mock_enabled:
-            async for chunk in self._mock_stream(messages):
+            async for chunk in self._mock_stream(messages, rag_context=rag_context):
                 yield chunk
             return
 
-        async for chunk in self._bedrock_stream(messages):
+        async for chunk in self._bedrock_stream(messages, rag_context=rag_context):
             yield chunk
 
-    async def _mock_stream(self, messages: list[dict[str, str]]) -> AsyncIterator[str]:
+    async def _mock_stream(
+        self,
+        messages: list[dict[str, str]],
+        rag_context: str | None = None,
+    ) -> AsyncIterator[str]:
         last_user = next((m["content"] for m in reversed(messages) if m["role"] == "user"), "")
+        rag_note = (
+            f"\nRAG: {rag_context.count('[문서')}개 관련 문서를 참조했습니다."
+            if rag_context
+            else "\nRAG: 참조 문서 없음 (ChromaDB에 인덱싱된 문서가 없습니다)."
+        )
         reply = (
-            f"[개발 모드 응답] '{last_user[:80]}'에 대한 답변입니다.\n"
+            f"[개발 모드 응답] '{last_user[:80]}'에 대한 답변입니다.{rag_note}\n"
             "Bedrock 연동 전 mock 스트리밍입니다. `BEDROCK_MOCK_ENABLED=false` 및 AWS 자격증명 설정 후 "
             "실제 Claude Sonnet 4.6 응답을 받을 수 있습니다."
         )
@@ -43,7 +53,11 @@ class BedrockService:
             yield word + " "
             await asyncio.sleep(0.03)
 
-    async def _bedrock_stream(self, messages: list[dict[str, str]]) -> AsyncIterator[str]:
+    async def _bedrock_stream(
+        self,
+        messages: list[dict[str, str]],
+        rag_context: str | None = None,
+    ) -> AsyncIterator[str]:
         try:
             import aioboto3
         except ImportError as exc:
@@ -57,6 +71,10 @@ class BedrockService:
             for m in messages
         ]
 
+        system_text = SYSTEM_PROMPT
+        if rag_context:
+            system_text = f"{SYSTEM_PROMPT}\n\n참고 문서 (답변 시 활용하세요):\n{rag_context}"
+
         session = aioboto3.Session()
         async with session.client(
             "bedrock-runtime",
@@ -64,7 +82,7 @@ class BedrockService:
         ) as client:
             response = await client.converse_stream(
                 modelId=self._settings.bedrock_model_id,
-                system=[{"text": SYSTEM_PROMPT}],
+                system=[{"text": system_text}],
                 messages=bedrock_messages,
                 inferenceConfig={
                     "maxTokens": self._settings.bedrock_max_tokens,

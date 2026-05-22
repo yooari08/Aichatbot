@@ -6,12 +6,24 @@ import { AnalyticsView } from "./views/AnalyticsView";
 import { UsersView } from "./views/UsersView";
 import { PlaceholderView } from "./views/PlaceholderView";
 import { useAdminNav } from "./useAdminNav";
-import { appShellHeaderBarClass } from "@/app/lib/layout";
+import {
+  adminMainClass,
+  adminMainContentClass,
+  adminMainContentScrollClass,
+  adminMainContentTableClass,
+  appShellHeaderBarClass,
+} from "@/app/lib/layout";
 import { cn } from "@/app/lib/utils";
 import { getBreadcrumb } from "@/app/constants/adminData";
 import type { AdminView } from "@/app/types/admin";
 
 const COLLAPSE_BREAKPOINT = 1200;
+
+const TABLE_VIEWS: AdminView[] = ["documents", "users", "roles", "auditLog"];
+
+function isTableView(view: AdminView) {
+  return TABLE_VIEWS.includes(view);
+}
 
 function renderView(view: AdminView) {
   switch (view) {
@@ -54,13 +66,8 @@ export default function AdminPage() {
         onToggle={() => setSidebarOpen((v) => !v)}
       />
 
-      <main className="flex-1 overflow-y-auto">
-        <div
-          className={cn(
-            appShellHeaderBarClass,
-            "px-8 justify-between sticky top-0 z-10"
-          )}
-        >
+      <main className={adminMainClass}>
+        <div className={cn(appShellHeaderBarClass, "px-8 justify-between shrink-0")}>
           <h1 className="flex items-center gap-1.5">
             {getBreadcrumb(activeView).map((crumb, i, arr) => (
               <Fragment key={crumb}>
@@ -77,7 +84,14 @@ export default function AdminPage() {
           </div>
         </div>
 
-        <div className="px-8 py-6">{renderView(activeView)}</div>
+        <div
+          className={cn(
+            adminMainContentClass,
+            isTableView(activeView) ? adminMainContentTableClass : adminMainContentScrollClass
+          )}
+        >
+          {renderView(activeView)}
+        </div>
       </main>
     </div>
   );

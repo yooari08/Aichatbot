@@ -1,0 +1,8 @@
+﻿.\.venv\Scripts\alembic.exe : INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+위치 C:\Users\Biztechi\AppData\Local\Temp\ps-script-74706101-b9ea-42aa-a462-ae98b034405d.ps1:75 문자:54
++ ... atbot\backend'; .\.venv\Scripts\alembic.exe upgrade head 2>&1 | Out-F ...
++                     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (INFO  [alembic....mpl SQLiteImpl.:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.

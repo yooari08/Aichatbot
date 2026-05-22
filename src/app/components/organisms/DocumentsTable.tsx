@@ -3,7 +3,7 @@ import { Button } from "@/app/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/app/components/ui/table";
-import { Card } from "@/app/components/ui/card";
+import { AdminTablePanel } from "@/app/components/organisms/AdminTablePanel";
 import { StatusTag } from "@/app/components/atoms/StatusTag";
 import { SearchInput } from "@/app/components/molecules/SearchInput";
 import { DOCUMENTS, STATUS_LABELS } from "@/app/constants/adminData";
@@ -26,20 +26,19 @@ export function DocumentsTable() {
   );
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-[16px] font-bold text-foreground">문서 목록</h2>
-        <div className="flex gap-2">
+    <AdminTablePanel
+      title="문서 목록"
+      actions={
+        <>
           <SearchInput value={search} onChange={setSearch} placeholder="문서 검색…" className="w-[200px]" />
           <Button size="sm" className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white">
             + 문서 추가
           </Button>
-        </div>
-      </div>
-
-      <Card className="p-0 overflow-hidden gap-0">
-        <Table>
-          <TableHeader className="bg-[#F8F8F9]">
+        </>
+      }
+    >
+      <Table>
+        <TableHeader className="sticky top-0 z-10 bg-[#F8F8F9]">
             <TableRow className="border-[#E5E5E5]">
               {["문서명", "카테고리", "유형", "버전", "상태", "등록일", "담당자", ""].map((h) => (
                 <TableHead key={h} className="text-[11px] font-semibold text-muted-foreground h-9 px-4">
@@ -73,8 +72,7 @@ export function DocumentsTable() {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
-      </Card>
-    </div>
+      </Table>
+    </AdminTablePanel>
   );
 }

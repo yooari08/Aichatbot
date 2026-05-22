@@ -13,6 +13,7 @@ from app.repositories.message_repository import MessageRepository
 from app.schemas.chat import ChatStreamEvent
 from app.services.bedrock_service import BedrockService
 from app.services.category_detect import detect_category
+from app.services.indexing_service import IndexingService
 
 
 def _truncate_title(text: str, max_len: int = 40) -> str:
@@ -29,6 +30,7 @@ class ChatService:
         self._conversations = ConversationRepository(session)
         self._messages = MessageRepository(session)
         self._bedrock = BedrockService(settings)
+        self._indexing = IndexingService(settings)
 
     async def stream_chat(
         self,
@@ -77,6 +79,13 @@ class ChatService:
             )
         )
 
+        # RAG: 현재 질문과 관련된 문서 청크 검색
+        rag_hits = await self._indexing.search(content)
+        rag_context: str | None = None
+        if rag_hits:
+            parts = [f"[문서 {i + 1}] {hit['content']}" for i, hit in enumerate(rag_hits)]
+            rag_context = "\n\n".join(parts)
+
         history = await self._messages.list_for_conversation(conversation.id)
         bedrock_messages = [
             {
@@ -88,7 +97,9 @@ class ChatService:
         bedrock_messages.append({"role": "user", "content": content})
 
         assistant_text_parts: list[str] = []
-        async for chunk in self._bedrock.stream_completion(messages=bedrock_messages):
+        async for chunk in self._bedrock.stream_completion(
+            messages=bedrock_messages, rag_context=rag_context
+        ):
             assistant_text_parts.append(chunk)
             yield self._sse(
                 ChatStreamEvent(

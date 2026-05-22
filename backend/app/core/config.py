@@ -31,6 +31,7 @@ class Settings(BaseSettings):
     jwt_access_token_expire_minutes: int = 30
 
     db_auto_create_tables: bool = False
+    run_migrations_on_startup: bool = True
     allow_registration: bool = False
     allow_admin_registration: bool = False
     bootstrap_admin_email: str | None = None

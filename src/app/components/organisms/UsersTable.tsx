@@ -3,10 +3,10 @@ import { Button } from "@/app/components/ui/button";
 import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/app/components/ui/table";
-import { Card } from "@/app/components/ui/card";
 import { UserAvatar } from "@/app/components/atoms/UserAvatar";
 import { StatusTag } from "@/app/components/atoms/StatusTag";
 import { SearchInput } from "@/app/components/molecules/SearchInput";
+import { AdminTablePanel } from "@/app/components/organisms/AdminTablePanel";
 import { USERS, ROLE_LABELS } from "@/app/constants/adminData";
 import type { StatusVariant } from "@/app/components/atoms/StatusTag";
 
@@ -27,20 +27,19 @@ export function UsersTable() {
   );
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-[16px] font-bold text-foreground">사용자 목록</h2>
-        <div className="flex gap-2">
+    <AdminTablePanel
+      title="사용자 목록"
+      actions={
+        <>
           <SearchInput value={search} onChange={setSearch} placeholder="사용자 검색…" className="w-[200px]" />
           <Button size="sm" className="bg-[#2563EB] hover:bg-[#1D4ED8] text-white">
             + 사용자 초대
           </Button>
-        </div>
-      </div>
-
-      <Card className="p-0 overflow-hidden gap-0">
-        <Table>
-          <TableHeader className="bg-[#F8F8F9]">
+        </>
+      }
+    >
+      <Table>
+        <TableHeader className="sticky top-0 z-10 bg-[#F8F8F9]">
             <TableRow className="border-[#E5E5E5]">
               {["이름", "이메일", "역할", "부서", "최근 로그인", "질문 수", "상태", ""].map((h) => (
                 <TableHead key={h} className="text-[11px] font-semibold text-muted-foreground h-9 px-4">
@@ -82,8 +81,7 @@ export function UsersTable() {
               </TableRow>
             ))}
           </TableBody>
-        </Table>
-      </Card>
-    </div>
+      </Table>
+    </AdminTablePanel>
   );
 }

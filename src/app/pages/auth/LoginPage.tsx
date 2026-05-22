@@ -16,6 +16,9 @@ function formatLoginError(err: unknown): string {
   if (err instanceof ApiError) {
     return err.message
   }
+  if (err instanceof DOMException && err.name === 'AbortError') {
+    return 'API 서버 응답이 없습니다. `npm run dev:api`로 백엔드를 실행했는지 확인해 주세요.'
+  }
   if (err instanceof TypeError && err.message.includes('fetch')) {
     return 'API 서버에 연결할 수 없습니다. 백엔드(포트 8080)가 실행 중인지 확인해 주세요.'
   }
