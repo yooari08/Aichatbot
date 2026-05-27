@@ -4,6 +4,8 @@ import { AdminSidebar } from "@/app/components/organisms/AdminSidebar";
 import { DocumentsView } from "./views/DocumentsView";
 import { AnalyticsView } from "./views/AnalyticsView";
 import { UsersView } from "./views/UsersView";
+import { MonitoringView } from "./views/MonitoringView";
+import { SettingsView } from "./views/SettingsView";
 import { PlaceholderView } from "./views/PlaceholderView";
 import { useAdminNav } from "./useAdminNav";
 import {
@@ -36,6 +38,10 @@ function renderView(view: AdminView) {
     case "roles":
     case "auditLog":
       return <UsersView />;
+    case "monitoring":
+      return <MonitoringView />;
+    case "settings":
+      return <SettingsView />;
     default:
       return <PlaceholderView view={view} />;
   }

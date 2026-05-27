@@ -7,7 +7,8 @@
     "build": "vite build",
     "dev": "vite",
     "dev:api": "cd backend && .venv\\Scripts\\uvicorn app.main:app --reload --port 8080",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "lint:backend": "cd backend && .venv\\Scripts\\ruff check app tests"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",
@@ -41,7 +42,6 @@
     "@radix-ui/react-toggle": "1.1.2",
     "@radix-ui/react-toggle-group": "1.1.2",
     "@radix-ui/react-tooltip": "1.1.8",
-    "@supabase/supabase-js": "^2.106.0",
     "canvas-confetti": "1.9.4",
     "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",

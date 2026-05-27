@@ -6,6 +6,7 @@ from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings
+from app.core.logging import get_logger
 from app.models.message import MessageRole
 from app.models.user import User
 from app.repositories.conversation_repository import ConversationRepository
@@ -97,15 +98,40 @@ class ChatService:
         bedrock_messages.append({"role": "user", "content": content})
 
         assistant_text_parts: list[str] = []
-        async for chunk in self._bedrock.stream_completion(
-            messages=bedrock_messages, rag_context=rag_context
-        ):
-            assistant_text_parts.append(chunk)
+        try:
+            async for chunk in self._bedrock.stream_completion(
+                messages=bedrock_messages, rag_context=rag_context
+            ):
+                assistant_text_parts.append(chunk)
+                yield self._sse(
+                    ChatStreamEvent(
+                        type="delta",
+                        conversation_id=conversation.id,
+                        text=chunk,
+                    )
+                )
+        except Exception as exc:
+            logger.exception("Bedrock streaming failed")
+            err_name = type(exc).__name__
+            if "InvalidSignature" in err_name or "Signature" in str(exc):
+                hint = (
+                    "AWS_SECRET_ACCESS_KEY가 ACCESS_KEY와 짝이 맞지 않거나 잘못 붙여넣었을 수 있습니다. "
+                    "IAM에서 새 액세스 키를 발급해 각각 별도 줄에 넣어 주세요."
+                )
+            elif "NoCredentials" in err_name:
+                hint = (
+                    "backend/.env에 AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY를 설정하고 "
+                    "API 서버를 재시작해 주세요."
+                )
+            else:
+                hint = "AWS_REGION·BEDROCK_MODEL_ID·Bedrock 모델 액세스 권한을 확인해 주세요."
+            fallback = f"현재 Bedrock 연결에 실패했습니다. {hint}"
+            assistant_text_parts.append(fallback)
             yield self._sse(
                 ChatStreamEvent(
                     type="delta",
                     conversation_id=conversation.id,
-                    text=chunk,
+                    text=fallback,
                 )
             )
 
@@ -129,3 +155,6 @@ class ChatService:
     @staticmethod
     def _sse(event: ChatStreamEvent) -> str:
         return f"data: {json.dumps(event.model_dump(mode='json'))}\n\n"
+
+
+logger = get_logger(__name__)

@@ -5,7 +5,7 @@ from datetime import datetime
 from sqlalchemy import DateTime, Enum, String, Text, Uuid
 from sqlalchemy.orm import Mapped, mapped_column
 
-from app.db.base import CURRENT_TIMESTAMP, Base
+from app.db.base import CURRENT_TIMESTAMP, Base, utc_now
 
 
 class DocumentStatus(str, enum.Enum):
@@ -31,13 +31,15 @@ class Document(Base):
     error_message: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        default=utc_now,
         server_default=CURRENT_TIMESTAMP,
         nullable=False,
         index=True,
     )
     updated_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
+        default=utc_now,
+        onupdate=utc_now,
         server_default=CURRENT_TIMESTAMP,
-        onupdate=CURRENT_TIMESTAMP,
         nullable=False,
     )

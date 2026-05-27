@@ -8,17 +8,7 @@ import { BotBadge } from "@/app/components/atoms/BotBadge";
 import { SidebarShell } from "@/app/components/organisms/SidebarShell";
 import { ConversationItem, DRAG_TYPE_CONVERSATION } from "@/app/components/molecules/ConversationItem";
 import { SearchInput } from "@/app/components/molecules/SearchInput";
-import { SidebarPopoverMenu } from "@/app/components/molecules/SidebarPopoverMenu";
 import { SidebarUserProfile } from "@/app/components/molecules/SidebarUserProfile";
-import {
-  Dialog,
-  DialogContent,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from "@/app/components/ui/dialog";
-import { Input } from "@/app/components/ui/input";
-import { Popover, PopoverContent, PopoverTrigger } from "@/app/components/ui/popover";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/components/ui/tooltip";
 import { cn } from "@/app/lib/utils";
 import { useAuth } from "@/app/contexts/AuthContext";
@@ -102,10 +92,6 @@ export function ChatSidebar({
   const { user } = useAuth();
   const handleLogout = useLogout();
   const [search, setSearch] = useState("");
-  const [chatbotTitle, setChatbotTitle] = useState(DEFAULT_CHATBOT_TITLE);
-  const [renameOpen, setRenameOpen] = useState(false);
-  const [renameTitle, setRenameTitle] = useState(chatbotTitle);
-  const [headerPopoverOpen, setHeaderPopoverOpen] = useState(false);
 
   const filtered = useMemo(
     () => conversations.filter((c) => search === '' || c.title.includes(search)),
@@ -119,23 +105,24 @@ export function ChatSidebar({
     if (conv && !conv.pinned) onPin(id);
   };
 
-  const openHeaderRename = () => {
-    setRenameTitle(chatbotTitle);
-    setRenameOpen(true);
-    setHeaderPopoverOpen(false);
-  };
+  const profileMenuItems = useMemo(
+    () => [
+      { label: "공지사항", onClick: () => window.alert("공지사항 기능은 준비 중입니다.") },
+      { label: "의견 보내기", onClick: () => window.alert("의견 보내기 기능은 준비 중입니다.") },
+      { label: "로그아웃", onClick: handleLogout },
+    ],
+    [handleLogout]
+  );
 
-  const submitHeaderRename = () => {
-    const trimmed = renameTitle.trim();
-    if (!trimmed) return;
-    setChatbotTitle(trimmed);
-    setRenameOpen(false);
-  };
-
-  const handleHeaderDelete = () => {
-    setChatbotTitle(DEFAULT_CHATBOT_TITLE);
-    setHeaderPopoverOpen(false);
-  };
+  const userProfileProps = user
+    ? {
+        initials: emailToInitials(user.email),
+        name: emailToDisplayName(user.email),
+        subtitle: getRoleLabel(user.role),
+        avatarVariant: "primary" as const,
+        menuItems: profileMenuItems,
+      }
+    : null;
 
   if (collapsed) {
     return (
@@ -157,6 +144,18 @@ export function ChatSidebar({
               <TooltipContent side="right" sideOffset={8}>사이드바 펼치기</TooltipContent>
             </Tooltip>
           </div>
+        }
+        footer={
+          userProfileProps ? (
+            <div className="flex justify-center py-3">
+              <SidebarUserProfile
+                {...userProfileProps}
+                compact
+                popoverSide="right"
+                popoverAlign="end"
+              />
+            </div>
+          ) : undefined
         }
       >
         <div className="py-2 flex flex-col items-center gap-0.5">
@@ -217,25 +216,14 @@ export function ChatSidebar({
         header={
           <div className="px-4 py-3 flex flex-col gap-3 w-full">
             <div className="flex items-center gap-1">
-              <Popover open={headerPopoverOpen} onOpenChange={setHeaderPopoverOpen}>
-                <PopoverTrigger asChild>
-                  <button
-                    type="button"
-                    className="flex-1 flex items-center justify-center gap-2 font-bold text-[15px] text-foreground rounded-md hover:bg-[#F8F8F9] py-1 transition-colors"
-                  >
-                    <BotBadge />
-                    <span className="align-middle">{chatbotTitle}</span>
-                  </button>
-                </PopoverTrigger>
-                <PopoverContent align="start" className="w-44 p-1">
-                  <SidebarPopoverMenu
-                    items={[
-                      { label: "이름 변경", onClick: openHeaderRename },
-                      { label: "삭제", variant: "destructive", onClick: handleHeaderDelete },
-                    ]}
-                  />
-                </PopoverContent>
-              </Popover>
+              <Link
+                to="/"
+                onClick={onNewChat}
+                className="flex-1 flex items-center justify-center gap-2 font-bold text-[15px] text-foreground rounded-md hover:bg-[#F8F8F9] py-1 transition-colors"
+              >
+                <BotBadge />
+                <span className="align-middle">{DEFAULT_CHATBOT_TITLE}</span>
+              </Link>
               <button
                 type="button"
                 onClick={onToggle}
@@ -260,19 +248,7 @@ export function ChatSidebar({
         }
         footer={
           <div className="px-4 py-3">
-            {user && (
-              <SidebarUserProfile
-                initials={emailToInitials(user.email)}
-                name={emailToDisplayName(user.email)}
-                subtitle={getRoleLabel(user.role)}
-                avatarVariant="primary"
-                menuItems={[
-                  { label: "공지사항", onClick: () => window.alert("공지사항 기능은 준비 중입니다.") },
-                  { label: "의견 보내기", onClick: () => window.alert("의견 보내기 기능은 준비 중입니다.") },
-                  { label: "로그아웃", onClick: handleLogout },
-                ]}
-              />
-            )}
+            {userProfileProps && <SidebarUserProfile {...userProfileProps} />}
             {user?.role === "admin" && (
               <Link
                 to="/admin"
@@ -353,24 +329,6 @@ export function ChatSidebar({
         </div>
       </SidebarShell>
 
-      <Dialog open={renameOpen} onOpenChange={setRenameOpen}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>챗봇 이름 변경</DialogTitle>
-          </DialogHeader>
-          <Input
-            value={renameTitle}
-            onChange={(e) => setRenameTitle(e.target.value)}
-            placeholder="챗봇 이름"
-            onKeyDown={(e) => { if (e.key === "Enter") submitHeaderRename(); }}
-            autoFocus
-          />
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setRenameOpen(false)}>취소</Button>
-            <Button onClick={submitHeaderRename} disabled={!renameTitle.trim()}>저장</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </>
   );
 }

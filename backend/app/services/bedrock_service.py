@@ -1,5 +1,4 @@
 import asyncio
-import json
 from collections.abc import AsyncIterator
 
 from app.core.config import Settings
@@ -18,6 +17,16 @@ SYSTEM_PROMPT = (
 class BedrockService:
     def __init__(self, settings: Settings) -> None:
         self._settings = settings
+
+    def _boto_session_kwargs(self) -> dict[str, str]:
+        """Build aioboto3 session kwargs from Settings (.env is not auto-exported to os.environ)."""
+        kwargs: dict[str, str] = {"region_name": self._settings.aws_region}
+        if self._settings.aws_access_key_id and self._settings.aws_secret_access_key:
+            kwargs["aws_access_key_id"] = self._settings.aws_access_key_id
+            kwargs["aws_secret_access_key"] = self._settings.aws_secret_access_key
+            if self._settings.aws_session_token:
+                kwargs["aws_session_token"] = self._settings.aws_session_token
+        return kwargs
 
     async def stream_completion(
         self,
@@ -75,11 +84,15 @@ class BedrockService:
         if rag_context:
             system_text = f"{SYSTEM_PROMPT}\n\n참고 문서 (답변 시 활용하세요):\n{rag_context}"
 
-        session = aioboto3.Session()
-        async with session.client(
-            "bedrock-runtime",
-            region_name=self._settings.aws_region,
-        ) as client:
+        session_kwargs = self._boto_session_kwargs()
+        if "aws_access_key_id" not in session_kwargs:
+            logger.warning(
+                "Bedrock: AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY not set in Settings — "
+                "boto3 default credential chain will be used"
+            )
+
+        session = aioboto3.Session(**session_kwargs)
+        async with session.client("bedrock-runtime") as client:
             response = await client.converse_stream(
                 modelId=self._settings.bedrock_model_id,
                 system=[{"text": system_text}],

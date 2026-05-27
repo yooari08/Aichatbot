@@ -5,7 +5,13 @@ from app.core.logging import get_logger
 from app.db.base import Base
 from app.db.migrate import recreate_sqlite_dev_database, run_alembic_upgrade
 from app.db.session import get_engine
-from app.models import Conversation, Document, IndexJob, Message, User  # noqa: F401 — register models
+from app.models import (  # noqa: F401 — register models
+    Conversation,
+    Document,
+    IndexJob,
+    Message,
+    User,
+)
 
 logger = get_logger(__name__)
 

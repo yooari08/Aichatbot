@@ -1,5 +1,5 @@
-from contextlib import asynccontextmanager
 from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -7,11 +7,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.core.logging import get_logger as get_app_logger
-
 from app.api.router import api_router
-from app.core.config import Settings, get_settings
+from app.core.config import get_settings
 from app.core.logging import configure_logging, get_logger
+from app.core.logging import get_logger as get_app_logger
 from app.db.bootstrap import prepare_database
 from app.db.session import close_db, init_db
 from app.schemas.common import ErrorResponse

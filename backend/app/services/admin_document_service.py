@@ -1,8 +1,11 @@
+import asyncio
 import uuid
+from pathlib import Path
 
 from fastapi import HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import Settings
 from app.models.document import DocumentStatus
 from app.models.index_job import IndexJobStatus
 from app.repositories.document_repository import DocumentRepository
@@ -12,12 +15,15 @@ from app.schemas.admin_documents import (
     DocumentResponse,
     IndexJobResponse,
 )
+from app.services.indexing_service import IndexingService
 
 
 class AdminDocumentService:
-    def __init__(self, session: AsyncSession) -> None:
+    def __init__(self, session: AsyncSession, settings: Settings) -> None:
         self._documents = DocumentRepository(session)
         self._index_jobs = IndexJobRepository(session)
+        self._settings = settings
+        self._indexing = IndexingService(settings)
 
     async def list_documents(
         self,
@@ -41,10 +47,65 @@ class AdminDocumentService:
             owner_name=payload.owner_name,
             status=DocumentStatus.PROCESSING,
         )
-        await self._index_jobs.create(
+        job = await self._index_jobs.create(
             document_id=row.id,
-            status=IndexJobStatus.PENDING,
-            message="Initial indexing queued",
+            status=IndexJobStatus.RUNNING,
+            message="Initial indexing started",
+        )
+        if payload.content is None:
+            await self._documents.update_status(
+                row,
+                status=DocumentStatus.FAILED,
+                error_message="Document content is required for indexing",
+            )
+            await self._index_jobs.update(
+                job,
+                status=IndexJobStatus.FAILED,
+                message="Indexing failed: missing content",
+            )
+            return DocumentResponse.model_validate(row)
+
+        await self._index_document_content(
+            document_id=row.id,
+            content=payload.content,
+            document=row,
+            job=job,
+        )
+        return DocumentResponse.model_validate(row)
+
+    async def upload_document(
+        self,
+        *,
+        file_name: str,
+        content: bytes,
+        category: str | None,
+        owner_name: str | None,
+    ) -> DocumentResponse:
+        documents_dir = Path(self._settings.documents_storage_path)
+        await asyncio.to_thread(documents_dir.mkdir, parents=True, exist_ok=True)
+        safe_name = Path(file_name).name
+        storage_name = f"{uuid.uuid4()}_{safe_name}"
+        storage_path = documents_dir / storage_name
+        await asyncio.to_thread(storage_path.write_bytes, content)
+
+        row = await self._documents.create(
+            file_name=safe_name,
+            storage_path=str(storage_path),
+            category=category,
+            owner_name=owner_name,
+            status=DocumentStatus.PROCESSING,
+        )
+        job = await self._index_jobs.create(
+            document_id=row.id,
+            status=IndexJobStatus.RUNNING,
+            message="Initial indexing started",
+        )
+
+        await self._index_document_content(
+            document_id=row.id,
+            content=self._decode_content(content),
+            document=row,
+            job=job,
         )
         return DocumentResponse.model_validate(row)
 
@@ -60,15 +121,38 @@ class AdminDocumentService:
         )
         job = await self._index_jobs.create(
             document_id=row.id,
-            status=IndexJobStatus.PENDING,
+            status=IndexJobStatus.RUNNING,
             message=message or "Reindex requested by admin",
         )
+        try:
+            content = await asyncio.to_thread(Path(row.storage_path).read_bytes)
+            await self._index_document_content(
+                document_id=row.id,
+                content=self._decode_content(content),
+                document=row,
+                job=job,
+            )
+        except Exception as exc:
+            await self._documents.update_status(
+                row,
+                status=DocumentStatus.FAILED,
+                error_message=str(exc),
+            )
+            await self._index_jobs.update(
+                job,
+                status=IndexJobStatus.FAILED,
+                message=f"Reindex failed: {exc}",
+            )
         return IndexJobResponse.model_validate(job)
 
     async def delete_document(self, document_id: uuid.UUID) -> None:
         row = await self._documents.get_by_id(document_id)
         if row is None:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Document not found")
+        try:
+            await self._indexing.delete_document(str(row.id))
+        except Exception:
+            pass
         await self._documents.delete(row)
 
     async def list_index_jobs(
@@ -84,3 +168,38 @@ class AdminDocumentService:
             limit=limit,
         )
         return [IndexJobResponse.model_validate(job) for job in jobs]
+
+    @staticmethod
+    def _decode_content(content: bytes) -> str:
+        decoded = content.decode("utf-8", errors="ignore").strip()
+        if not decoded:
+            raise ValueError("Text extraction failed from uploaded document")
+        return decoded
+
+    async def _index_document_content(
+        self,
+        *,
+        document_id: uuid.UUID,
+        content: str,
+        document,
+        job,
+    ) -> None:
+        try:
+            chunks = await self._indexing.index_document(str(document_id), content)
+            await self._documents.update_status(document, status=DocumentStatus.DONE, error_message=None)
+            await self._index_jobs.update(
+                job,
+                status=IndexJobStatus.SUCCEEDED,
+                message=f"Indexed {chunks} chunks",
+            )
+        except Exception as exc:
+            await self._documents.update_status(
+                document,
+                status=DocumentStatus.FAILED,
+                error_message=str(exc),
+            )
+            await self._index_jobs.update(
+                job,
+                status=IndexJobStatus.FAILED,
+                message=f"Indexing failed: {exc}",
+            )

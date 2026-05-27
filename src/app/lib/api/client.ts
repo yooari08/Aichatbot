@@ -11,7 +11,8 @@ export async function apiFetch<T>(
   timeoutMs: number = DEFAULT_TIMEOUT_MS
 ): Promise<T> {
   const headers = new Headers(init.headers)
-  if (!headers.has('Content-Type') && init.body) {
+  const isFormData = typeof FormData !== 'undefined' && init.body instanceof FormData
+  if (!headers.has('Content-Type') && init.body && !isFormData) {
     headers.set('Content-Type', 'application/json')
   }
 

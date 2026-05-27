@@ -11,6 +11,7 @@ from app.core.security import decode_access_token
 from app.db.session import get_db_session
 from app.models.user import User, UserRole
 from app.repositories.user_repository import UserRepository
+
 bearer_scheme = HTTPBearer(auto_error=False)
 
 DbSession = Annotated[AsyncSession, Depends(get_db_session)]

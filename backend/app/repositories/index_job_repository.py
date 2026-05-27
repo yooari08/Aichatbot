@@ -38,3 +38,18 @@ class IndexJobRepository:
         await self._session.flush()
         await self._session.refresh(job)
         return job
+
+    async def update(
+        self,
+        job: IndexJob,
+        *,
+        status: IndexJobStatus | None = None,
+        message: str | None = None,
+    ) -> IndexJob:
+        if status is not None:
+            job.status = status
+        if message is not None:
+            job.message = message
+        await self._session.flush()
+        await self._session.refresh(job)
+        return job

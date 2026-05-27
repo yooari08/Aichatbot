@@ -85,6 +85,7 @@ export function useChat() {
   const newChat = useCallback(() => {
     streamAbortRef.current?.abort()
     setActiveId(null)
+    setInput('')
     setIsTyping(false)
   }, [])
 

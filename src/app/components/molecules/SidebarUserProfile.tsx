@@ -11,6 +11,10 @@ type Props = {
   menuItems?: SidebarPopoverMenuItem[];
   avatarVariant?: "primary" | "dark" | "muted";
   className?: string;
+  /** 아이콘만 표시 (접힌 사이드바) */
+  compact?: boolean;
+  popoverSide?: "top" | "right" | "bottom" | "left";
+  popoverAlign?: "start" | "center" | "end";
 };
 
 export function SidebarUserProfile({
@@ -21,6 +25,9 @@ export function SidebarUserProfile({
   menuItems,
   avatarVariant = "primary",
   className,
+  compact = false,
+  popoverSide = "top",
+  popoverAlign = "start",
 }: Props) {
   const inner = (
     <>
@@ -38,14 +45,33 @@ export function SidebarUserProfile({
   );
 
   if (menuItems && menuItems.length > 0) {
+    const triggerClass = compact
+      ? cn(
+          "flex size-9 items-center justify-center rounded-lg hover:bg-[#F0F2F6] transition-colors cursor-pointer",
+          className
+        )
+      : rowClass;
+
+    const triggerContent = compact ? (
+      <UserAvatar initials={initials} variant={avatarVariant} />
+    ) : (
+      inner
+    );
+
     return (
       <Popover>
         <PopoverTrigger asChild>
-          <button type="button" className={rowClass}>
-            {inner}
+          <button type="button" className={triggerClass} aria-label={`${name} 메뉴`}>
+            {triggerContent}
           </button>
         </PopoverTrigger>
-        <PopoverContent align="start" side="top" className="w-44 p-1">
+        <PopoverContent align={popoverAlign} side={popoverSide} className="w-44 p-1">
+          {compact && (
+            <div className="px-2 py-1.5 border-b border-[#E5E5E5] mb-1">
+              <div className="text-[13px] font-semibold text-[#0A0A0A] truncate">{name}</div>
+              <div className={cn("text-[11px] truncate", subtitleClassName)}>{subtitle}</div>
+            </div>
+          )}
           <SidebarPopoverMenu items={menuItems} />
         </PopoverContent>
       </Popover>

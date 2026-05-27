@@ -44,14 +44,17 @@ class Settings(BaseSettings):
     dev_test_admin_password: str = "TestAdmin123!"
 
     aws_region: str = "ap-northeast-2"
-    # Bedrock: use IAM roles in Rancher/K8s; never commit credentials.
+    # Local/dev only — in production use IAM role (do not commit real keys).
+    aws_access_key_id: str | None = None
+    aws_secret_access_key: str | None = None
+    aws_session_token: str | None = None
     bedrock_model_id: str = "anthropic.claude-sonnet-4-6"
     bedrock_max_tokens: int = 4096
     bedrock_temperature: float = 0.3
     bedrock_mock_enabled: bool = True
 
     conversation_retention_days: int = 90
-    documents_storage_path: str = "/data/documents"
+    documents_storage_path: str = "./data/documents"
 
     # NoDecode: .env uses comma-separated URLs, not JSON arrays
     cors_origins: Annotated[list[str], NoDecode] = Field(
@@ -64,6 +67,14 @@ class Settings(BaseSettings):
         if isinstance(value, str):
             return [origin.strip() for origin in value.split(",") if origin.strip()]
         return value
+
+    @field_validator("aws_access_key_id", "aws_secret_access_key", "aws_session_token", mode="before")
+    @classmethod
+    def strip_aws_credential(cls, value: str | None) -> str | None:
+        if value is None or not isinstance(value, str):
+            return value
+        cleaned = value.strip().strip('"').strip("'")
+        return cleaned or None
 
     @property
     def chroma_url(self) -> str:

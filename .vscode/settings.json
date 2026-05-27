@@ -1,6 +1,4 @@
 {
   "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  "deno.enablePaths": ["supabase/functions"],
-  "deno.unstable": true
+  "typescript.enablePromptUseWorkspaceTsdk": true
 }

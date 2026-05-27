@@ -12,6 +12,7 @@ class DocumentCreateRequest(BaseModel):
     storage_path: str = Field(min_length=1, max_length=1024)
     category: str | None = Field(default=None, max_length=64)
     owner_name: str | None = Field(default=None, max_length=128)
+    content: str | None = Field(default=None, min_length=1)
 
 
 class DocumentResponse(BaseModel):

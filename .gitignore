@@ -15,6 +15,10 @@ backend/.pytest_cache/
 backend/.ruff_cache/
 backend/dist/
 backend/*.egg-info/
+backend/data/
+
+# Local document uploads (repo root — misconfigured path)
+/data/
 
 # Rancher / K8s local secrets
 deploy/rancher/secret.local.yaml

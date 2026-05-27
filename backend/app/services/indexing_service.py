@@ -70,7 +70,7 @@ class IndexingService:
         dists = results.get("distances", [[]])[0]
         return [
             {"content": doc, "metadata": meta, "distance": dist}
-            for doc, meta, dist in zip(docs, metas, dists)
+            for doc, meta, dist in zip(docs, metas, dists, strict=True)
         ]
 
     async def index_document(
