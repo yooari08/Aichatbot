@@ -1,0 +1,47 @@
+# Backend Documentation Sync
+
+백엔드 아키텍처/인프라/RAG/API 변경은 문서와 항상 함께 반영한다.
+
+## Required Locations
+
+- `docs/backend/`
+- `docs/api/`
+- `docs/rag/`
+- `docs/security/`
+- `docs/devops/`
+
+## Required Documents By Scope
+
+- API/계약 변경: `docs/api/api-spec.md`
+- DB 스키마/관계 변경: `docs/backend/database-schema.md`
+- 백엔드 구조/레이어/설계결정 변경: `docs/backend/architecture-decisions.md`
+- RAG 수집/청킹/임베딩/검색 변경: `docs/rag/rag-pipeline.md`, `docs/rag/vector-search.md`
+- 인증/RBAC/보안경계 변경: `docs/security/authentication.md`, `docs/security/security-considerations.md`
+- 배포/환경/관측 변경: `docs/devops/deployment.md`, `docs/devops/environment-config.md`, `docs/devops/logging-monitoring.md`
+
+## Mandatory Process
+
+1. 구현 전 문서 영향 범위를 먼저 식별한다.
+2. 코드 변경과 문서 변경을 같은 작업 단위에서 처리한다.
+3. 최종 보고에 업데이트된 문서와 변경 이유를 명시한다.
+
+## Documentation Minimum Content
+
+- architecture overview
+- API contracts
+- request/response examples
+- database relationships
+- RAG ingestion flow
+- embedding/indexing flow
+- security considerations
+- deployment requirements
+- environment variables
+- infrastructure dependencies
+- operational considerations
+- scaling considerations
+
+## Guardrails
+
+- 프로덕션 영향 백엔드 변경을 문서 없이 완료하지 않는다.
+- 기존 API 동작 변경 시 backward compatibility 또는 버전 정책을 문서화한다.
+- 미구현 항목은 "현재 상태/리스크/권장안"으로 구분해 기록한다.

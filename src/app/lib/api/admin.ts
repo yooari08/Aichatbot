@@ -18,6 +18,7 @@ export interface ApiDocument {
   category: string | null
   owner_name: string | null
   status: DocumentStatus
+  error_message: string | null
   created_at: string
   updated_at: string
 }

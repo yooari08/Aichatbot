@@ -142,7 +142,7 @@ export function DocumentsTable() {
       <Table>
         <TableHeader className="sticky top-0 z-10 bg-[#F8F8F9]">
           <TableRow className="border-[#E5E5E5]">
-            {['문서명', '카테고리', '유형', '상태', '등록일', '담당자', ''].map((h) => (
+            {['문서명', '카테고리', '유형', '상태', '오류 사유', '등록일', '담당자', ''].map((h) => (
               <TableHead key={h} className="text-[11px] font-semibold text-muted-foreground h-9 px-4">
                 {h}
               </TableHead>
@@ -162,7 +162,7 @@ export function DocumentsTable() {
             ))
           ) : rows.length === 0 ? (
             <TableRow>
-              <TableCell colSpan={7} className="px-4 py-10 text-center text-[12px] text-muted-foreground">
+              <TableCell colSpan={8} className="px-4 py-10 text-center text-[12px] text-muted-foreground">
                 {search ? '검색 결과가 없습니다.' : '등록된 문서가 없습니다.'}
               </TableCell>
             </TableRow>
@@ -174,6 +174,9 @@ export function DocumentsTable() {
                 <TableCell className="px-4 py-3 text-[12px] text-muted-foreground">{fileExt(doc.file_name)}</TableCell>
                 <TableCell className="px-4 py-3">
                   <StatusTag label={STATUS_LABEL[doc.status]} variant={STATUS_VARIANT[doc.status]} />
+                </TableCell>
+                <TableCell className="px-4 py-3 text-[12px] text-muted-foreground max-w-[280px] truncate" title={doc.error_message ?? ''}>
+                  {doc.status === 'failed' ? (doc.error_message ?? '원인 정보 없음') : '—'}
                 </TableCell>
                 <TableCell className="px-4 py-3 text-[12px] text-muted-foreground">{formatIsoDate(doc.created_at)}</TableCell>
                 <TableCell className="px-4 py-3 text-[12px] text-muted-foreground">{doc.owner_name ?? '—'}</TableCell>

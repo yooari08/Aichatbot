@@ -6,9 +6,10 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite",
-    "dev:api": "cd backend && .venv\\Scripts\\uvicorn app.main:app --reload --port 8080",
+    "dev:chroma": "cd backend && .venv\\Scripts\\python -m uvicorn chromadb.app:app --host 127.0.0.1 --port 8000",
+    "dev:api": "cd backend && .venv\\Scripts\\python -m uvicorn app.main:app --reload --reload-dir app --reload-exclude .venv --port 8080",
     "typecheck": "tsc --noEmit",
-    "lint:backend": "cd backend && .venv\\Scripts\\ruff check app tests"
+    "lint:backend": "cd backend && .venv\\Scripts\\python -m ruff check app tests"
   },
   "dependencies": {
     "@emotion/react": "11.14.0",

@@ -25,6 +25,7 @@ class Settings(BaseSettings):
     chroma_host: str = "localhost"
     chroma_port: int = 8000
     chroma_collection: str = "enterprise_kb"
+    chroma_persist_path: str = "./data/chroma"
 
     jwt_secret_key: str = Field(min_length=32)
     jwt_algorithm: str = "HS256"

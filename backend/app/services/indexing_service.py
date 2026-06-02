@@ -35,18 +35,14 @@ class IndexingService:
         except ImportError as exc:
             raise RuntimeError("chromadb 패키지가 필요합니다: pip install chromadb") from exc
 
-        client = chromadb.HttpClient(
-            host=self._settings.chroma_host,
-            port=self._settings.chroma_port,
-        )
+        client = chromadb.PersistentClient(path=self._settings.chroma_persist_path)
         self._collection = client.get_or_create_collection(
             name=self._settings.chroma_collection,
             metadata={"hnsw:space": "cosine"},
         )
         logger.info(
-            "ChromaDB 연결됨 %s:%s collection=%s",
-            self._settings.chroma_host,
-            self._settings.chroma_port,
+            "ChromaDB 연결됨 (persistent) path=%s collection=%s",
+            self._settings.chroma_persist_path,
             self._settings.chroma_collection,
         )
         return self._collection
