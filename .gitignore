@@ -9,6 +9,7 @@ package-lock.json
 backend/dev.db
 backend/.venv/
 backend/.env
+backend/.env.local
 backend/**/__pycache__/
 backend/**/*.pyc
 backend/.pytest_cache/

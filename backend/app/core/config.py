@@ -7,7 +7,10 @@ from pydantic_settings import BaseSettings, NoDecode, SettingsConfigDict
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env",
+        # .env.local (gitignored) is loaded second and overrides .env.
+        # Local dev: put real AWS keys in .env.local.
+        # Production: neither file has keys; boto3 uses the pod's IAM role.
+        env_file=(".env", ".env.local"),
         env_file_encoding="utf-8",
         case_sensitive=False,
         extra="ignore",
