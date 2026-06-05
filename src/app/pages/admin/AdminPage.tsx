@@ -4,6 +4,9 @@ import { AdminSidebar } from "@/app/components/organisms/AdminSidebar";
 import { DocumentsView } from "./views/DocumentsView";
 import { AnalyticsView } from "./views/AnalyticsView";
 import { UsersView } from "./views/UsersView";
+import { RolesView } from "./views/RolesView";
+import { AuditLogView } from "./views/AuditLogView";
+import { QualityView } from "./views/QualityView";
 import { MonitoringView } from "./views/MonitoringView";
 import { SettingsView } from "./views/SettingsView";
 import { PlaceholderView } from "./views/PlaceholderView";
@@ -21,7 +24,7 @@ import type { AdminView } from "@/app/types/admin";
 
 const COLLAPSE_BREAKPOINT = 1200;
 
-const TABLE_VIEWS: AdminView[] = ["documents", "users", "roles", "auditLog"];
+const TABLE_VIEWS: AdminView[] = ["documents", "users", "auditLog"];
 
 function isTableView(view: AdminView) {
   return TABLE_VIEWS.includes(view);
@@ -32,12 +35,15 @@ function renderView(view: AdminView) {
     case "documents":
       return <DocumentsView />;
     case "analytics":
-    case "quality":
       return <AnalyticsView />;
+    case "quality":
+      return <QualityView />;
     case "users":
-    case "roles":
-    case "auditLog":
       return <UsersView />;
+    case "roles":
+      return <RolesView />;
+    case "auditLog":
+      return <AuditLogView />;
     case "monitoring":
       return <MonitoringView />;
     case "settings":

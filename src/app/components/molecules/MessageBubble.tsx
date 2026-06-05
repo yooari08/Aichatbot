@@ -1,4 +1,6 @@
 import { ThumbsUp, ThumbsDown, Copy, Check, FileText, Mail } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { Button } from "@/app/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/app/components/ui/tooltip";
 import { BotBadge } from "@/app/components/atoms/BotBadge";
@@ -83,7 +85,11 @@ export function MessageBubble({ message, liked, copiedId, onLike, onCopy, onEmai
       </div>
 
       <div className="max-w-[80%] bg-white rounded-2xl rounded-tl-sm pt-3 text-[16px] leading-[1.7] text-foreground">
-        {formatText(message.text)}
+        <div className="markdown-body px-0">
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {message.text}
+          </ReactMarkdown>
+        </div>
         {message.source && (
           <div className="mt-2.5 flex items-center gap-1.5 rounded-md bg-[#F8F8F9] px-2.5 py-2">
             <FileText className="size-3 shrink-0 text-muted-foreground" />

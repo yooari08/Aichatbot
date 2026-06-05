@@ -81,6 +81,50 @@ export function listUsers(q?: string): Promise<UserListResponse> {
   return apiFetch<UserListResponse>(`${ADMIN}/users${qs}`)
 }
 
+export function updateUserRole(userId: string, role: UserRole): Promise<ApiUser> {
+  return apiFetch<ApiUser>(`${ADMIN}/users/${userId}/role`, {
+    method: 'PATCH',
+    body: JSON.stringify({ role }),
+  })
+}
+
+export function toggleUserActive(userId: string, is_active: boolean): Promise<ApiUser> {
+  return apiFetch<ApiUser>(`${ADMIN}/users/${userId}`, {
+    method: 'PATCH',
+    body: JSON.stringify({ is_active }),
+  })
+}
+
+// ── 감사 로그 ────────────────────────────────────────────
+export interface AuditLogEntry {
+  id: string
+  user_email: string
+  action: string
+  resource_type: string
+  resource_id: string | null
+  detail: string | null
+  ip_address: string | null
+  created_at: string
+}
+
+export interface AuditLogListResponse {
+  items: AuditLogEntry[]
+  total: number
+}
+
+export function listAuditLog(params?: {
+  q?: string
+  limit?: number
+  offset?: number
+}): Promise<AuditLogListResponse> {
+  const sp = new URLSearchParams()
+  if (params?.q) sp.set('q', params.q)
+  if (params?.limit) sp.set('limit', String(params.limit))
+  if (params?.offset) sp.set('offset', String(params.offset))
+  const qs = sp.toString() ? `?${sp.toString()}` : ''
+  return apiFetch<AuditLogListResponse>(`${ADMIN}/audit-log${qs}`)
+}
+
 // ── 통계 ────────────────────────────────────────────────
 export interface CategoryStat {
   name: string
@@ -106,6 +150,30 @@ export interface StatsResponse {
 
 export function getStats(): Promise<StatsResponse> {
   return apiFetch<StatsResponse>(`${ADMIN}/stats`)
+}
+
+// ── 품질/피드백 ──────────────────────────────────────────
+export interface FeedbackEntry {
+  id: string
+  message_id: string
+  user_email: string
+  value: boolean
+  conversation_title: string
+  message_preview: string
+  created_at: string
+}
+
+export interface FeedbackStatsResponse {
+  total_positive: number
+  total_negative: number
+  total_this_month: number
+  total_last_month: number
+  satisfaction_rate: number
+  recent_feedback: FeedbackEntry[]
+}
+
+export function getFeedbackStats(): Promise<FeedbackStatsResponse> {
+  return apiFetch<FeedbackStatsResponse>(`${ADMIN}/feedback-stats`)
 }
 
 // ── 모니터링 / 헬스 ───────────────────────────────────────

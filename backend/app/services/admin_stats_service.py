@@ -8,7 +8,7 @@ from app.models.conversation import Conversation
 from app.models.document import Document, DocumentStatus
 from app.models.message import Message, MessageRole
 from app.models.user import User
-from app.schemas.admin_stats import CategoryStat, DailyStat, StatsResponse
+from app.schemas.admin_stats import CategoryStat, DailyStat, FeedbackEntry, FeedbackStatsResponse, StatsResponse
 
 
 class AdminStatsService:
@@ -109,6 +109,76 @@ class AdminStatsService:
             category_breakdown=category_breakdown,
             daily_messages=daily_messages,
             top_conversation_titles=top_titles,
+        )
+
+    async def get_feedback_stats(self) -> FeedbackStatsResponse:
+        now = datetime.now(UTC)
+        this_month_start = now.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+        last_month_end = this_month_start - timedelta(seconds=1)
+        last_month_start = last_month_end.replace(day=1, hour=0, minute=0, second=0, microsecond=0)
+
+        # 전체 긍정/부정 수
+        pos_result = await self._session.execute(
+            select(func.count()).select_from(Message)
+            .where(Message.feedback == True)  # noqa: E712
+        )
+        total_positive = int(pos_result.scalar_one())
+
+        neg_result = await self._session.execute(
+            select(func.count()).select_from(Message)
+            .where(Message.feedback == False)  # noqa: E712
+        )
+        total_negative = int(neg_result.scalar_one())
+
+        # 이번 달 / 지난 달
+        this_month_result = await self._session.execute(
+            select(func.count()).select_from(Message)
+            .where(Message.feedback.isnot(None), Message.created_at >= this_month_start)
+        )
+        total_this_month = int(this_month_result.scalar_one())
+
+        last_month_result = await self._session.execute(
+            select(func.count()).select_from(Message)
+            .where(
+                Message.feedback.isnot(None),
+                Message.created_at >= last_month_start,
+                Message.created_at <= last_month_end,
+            )
+        )
+        total_last_month = int(last_month_result.scalar_one())
+
+        total = total_positive + total_negative
+        satisfaction_rate = round(total_positive / total * 100, 1) if total > 0 else 0.0
+
+        # 최근 피드백 20건 (유저 이메일, 대화 제목 포함)
+        recent_rows = await self._session.execute(
+            select(Message, Conversation, User)
+            .join(Conversation, Message.conversation_id == Conversation.id)
+            .join(User, Conversation.user_id == User.id)
+            .where(Message.feedback.isnot(None))
+            .order_by(Message.created_at.desc())
+            .limit(20)
+        )
+        recent_feedback: list[FeedbackEntry] = [
+            FeedbackEntry(
+                id=str(msg.id),
+                message_id=str(msg.id),
+                user_email=user.email,
+                value=bool(msg.feedback),
+                conversation_title=conv.title or "제목 없음",
+                message_preview=msg.content[:120],
+                created_at=msg.created_at.isoformat(),
+            )
+            for msg, conv, user in recent_rows.all()
+        ]
+
+        return FeedbackStatsResponse(
+            total_positive=total_positive,
+            total_negative=total_negative,
+            total_this_month=total_this_month,
+            total_last_month=total_last_month,
+            satisfaction_rate=satisfaction_rate,
+            recent_feedback=recent_feedback,
         )
 
     async def _count_messages_between(self, start: datetime, end: datetime) -> int:

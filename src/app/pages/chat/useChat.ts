@@ -1,6 +1,22 @@
 import { startTransition, useCallback, useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import * as chatApi from '@/app/lib/api/chat'
+
+const LIKED_STORAGE_KEY = 'chat_liked_messages'
+
+function loadLikedMessages(): Record<string, boolean | null> {
+  try {
+    return JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY) ?? '{}') as Record<string, boolean | null>
+  } catch {
+    return {}
+  }
+}
+
+function saveLikedMessages(map: Record<string, boolean | null>): void {
+  try {
+    localStorage.setItem(LIKED_STORAGE_KEY, JSON.stringify(map))
+  } catch {}
+}
 import { ApiError } from '@/app/lib/api/errors'
 import {
   asCategory,
@@ -30,7 +46,7 @@ export function useChat() {
   const [input, setInput] = useState('')
   const [isTyping, setIsTyping] = useState(false)
   const [isLoadingList, setIsLoadingList] = useState(true)
-  const [likedMessages, setLikedMessages] = useState<Record<string, boolean | null>>({})
+  const [likedMessages, setLikedMessages] = useState<Record<string, boolean | null>>(loadLikedMessages)
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
   const streamAbortRef = useRef<AbortController | null>(null)
@@ -251,11 +267,14 @@ export function useChat() {
   )
 
   const handleLike = useCallback((id: string, value: boolean) => {
-    setLikedMessages((prev) => ({
-      ...prev,
-      [id]: prev[id] === value ? null : value,
-    }))
-  }, [])
+    const next = likedMessages[id] === value ? null : value
+    setLikedMessages((prev) => {
+      const updated = { ...prev, [id]: next }
+      saveLikedMessages(updated)
+      return updated
+    })
+    chatApi.submitFeedback(id, next).catch(() => {})
+  }, [likedMessages])
 
   const handleCopy = useCallback((id: string, text: string) => {
     navigator.clipboard.writeText(text).catch(() => {})

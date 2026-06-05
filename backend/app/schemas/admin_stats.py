@@ -7,6 +7,25 @@ class CategoryStat(BaseModel):
     pct: float
 
 
+class FeedbackEntry(BaseModel):
+    id: str
+    message_id: str
+    user_email: str
+    value: bool
+    conversation_title: str
+    message_preview: str
+    created_at: str
+
+
+class FeedbackStatsResponse(BaseModel):
+    total_positive: int
+    total_negative: int
+    total_this_month: int
+    total_last_month: int
+    satisfaction_rate: float
+    recent_feedback: list[FeedbackEntry]
+
+
 class DailyStat(BaseModel):
     date: str   # "YYYY-MM-DD"
     count: int

@@ -43,6 +43,16 @@ export function deleteConversation(id: string): Promise<void> {
   return apiFetch<void>(`/api/v1/conversations/${id}`, { method: 'DELETE' })
 }
 
+export function submitFeedback(
+  messageId: string,
+  value: boolean | null
+): Promise<void> {
+  return apiFetch<void>(`/api/v1/messages/${messageId}/feedback`, {
+    method: 'POST',
+    body: JSON.stringify({ value }),
+  })
+}
+
 export async function* streamChatMessage(
   payload: SendChatMessagePayload,
   signal?: AbortSignal

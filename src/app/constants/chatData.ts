@@ -1,12 +1,5 @@
 import type { Category, Conversation } from "../types/chat";
 
-export const CHAT_CURRENT_USER = {
-  initials: "홍길",
-  name: "홍길동",
-  role: "일반 사용자",
-  hint: "↑ 클릭: 공지사항 · 의견 보내기",
-} as const;
-
 export const SUGGESTIONS: { cat: Category; q: string }[] = [
   { cat: "HR", q: "연차는 입사 후\n며칠부터 쓸 수 있나요?" },
   { cat: "복리후생", q: "경조사비 지원 조건과\n절차가 궁금해요" },
