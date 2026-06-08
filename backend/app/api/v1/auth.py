@@ -1,4 +1,4 @@
-from fastapi import APIRouter, status
+from fastapi import APIRouter, Request, status
 
 from app.api.deps import CurrentUser, DbSession, SettingsDep
 from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse, UserResponse
@@ -10,10 +10,12 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 @router.post("/login", response_model=TokenResponse)
 async def login(
     payload: LoginRequest,
+    request: Request,
     session: DbSession,
     settings: SettingsDep,
 ) -> TokenResponse:
-    return await AuthService(session, settings).login(payload)
+    ip = request.client.host if request.client else None
+    return await AuthService(session, settings).login(payload, ip_address=ip)
 
 
 @router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)

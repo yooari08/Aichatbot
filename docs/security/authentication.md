@@ -19,6 +19,10 @@
 - Endpoint: `POST /api/v1/auth/login`
 - Input: email + password
 - Output: access token, token type, expires seconds
+- Audit:
+  - success → `audit_log.action = LOGIN` (IP from request client)
+  - failure → `audit_log.action = LOGIN_FAILED` with `detail` (`invalid credentials` | `account disabled`)
+  - failed login audit is committed before HTTP error response (survives session rollback)
 
 ### Register
 

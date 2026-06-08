@@ -48,7 +48,10 @@
 - `role` enum(`user`, `assistant`)
 - `content` text
 - `source` text, nullable (citation/source reserve)
+- `feedback` boolean, nullable — `true`=positive, `false`=negative, `null`=no feedback
 - `created_at` timestamptz
+
+Migration: `20260605_0001_add_feedback_to_messages`
 
 ### documents
 
@@ -68,6 +71,20 @@
 - `status` enum(`pending`, `running`, `succeeded`, `failed`) indexed
 - `message` text, nullable
 - `created_at`, `updated_at` timestamptz
+
+### audit_log
+
+- `id` UUID PK
+- `user_id` UUID FK → `users.id` (ondelete=SET NULL, nullable)
+- `user_email` varchar(255), nullable (사용자 삭제 후에도 이메일 보존)
+- `action` varchar(16) — `CREATE` | `UPDATE` | `DELETE` | `LOGIN` | `LOGIN_FAILED`
+- `resource_type` varchar(64), nullable
+- `resource_id` varchar(255), nullable
+- `detail` text, nullable
+- `ip_address` varchar(64), nullable
+- `created_at` timestamptz
+
+Migration: `20260605_0002_add_audit_log_table`
 
 ## Query Performance Notes
 

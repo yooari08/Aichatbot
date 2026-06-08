@@ -37,7 +37,10 @@
 
 - Ensure log aggregation in cluster (e.g., Fluent Bit + Datadog/ELK)
 - Redact sensitive data (tokens, credentials, PII) at log boundary
-- Add audit logs for admin operations
+- Audit logs (DB-backed):
+  - `audit_log` table via `audit_service.log_action`
+  - events: `LOGIN`, `LOGIN_FAILED`, user `CREATE`/`UPDATE`
+  - query: `GET /api/v1/admin/audit-log` (admin only)
 
 ## Scaling Considerations
 

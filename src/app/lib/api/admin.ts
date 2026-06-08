@@ -95,6 +95,17 @@ export function toggleUserActive(userId: string, is_active: boolean): Promise<Ap
   })
 }
 
+export function inviteUser(payload: {
+  email: string
+  password: string
+  role: UserRole
+}): Promise<ApiUser> {
+  return apiFetch<ApiUser>(`${ADMIN}/users`, {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  })
+}
+
 // ── 감사 로그 ────────────────────────────────────────────
 export interface AuditLogEntry {
   id: string
@@ -114,11 +125,13 @@ export interface AuditLogListResponse {
 
 export function listAuditLog(params?: {
   q?: string
+  action?: string
   limit?: number
   offset?: number
 }): Promise<AuditLogListResponse> {
   const sp = new URLSearchParams()
   if (params?.q) sp.set('q', params.q)
+  if (params?.action) sp.set('action', params.action)
   if (params?.limit) sp.set('limit', String(params.limit))
   if (params?.offset) sp.set('offset', String(params.offset))
   const qs = sp.toString() ? `?${sp.toString()}` : ''

@@ -1,0 +1,17 @@
+---
+description: Engineering guardrails and mandatory harness review checklist
+alwaysApply: true
+---
+
+# Engineering Guardrails
+
+모든 구현·리뷰·리팩터 작업 전에 아래 문서를 읽고 따른다.
+
+- **필수**: `docs/engineering/harness-guardrails.md`
+- **UI 작업 시 추가**: `docs/engineering/skills/vite-atomic-ui.md`
+
+## Mandatory
+
+- harness-guardrails.md의 **Harness Rules 검수(필수)** 체크리스트를 작업 완료 전에 반드시 수행한다.
+- 문서 동기화, lint/typecheck, 마이그레이션 HEAD 일치, 보안 검수를 생략하지 않는다.
+- 규칙·스킬 내용은 `docs/engineering/`을 단일 기준(source of truth)으로 유지한다.

@@ -13,10 +13,12 @@
 ### Health
 
 #### `GET /health`
+
 - Purpose: Liveness check
 - Auth: None
 
 Response example:
+
 ```json
 {
   "status": "ok",
@@ -26,10 +28,12 @@ Response example:
 ```
 
 #### `GET /ready`
+
 - Purpose: Readiness check (API + Postgres status)
 - Auth: None
 
 Response example:
+
 ```json
 {
   "status": "degraded",
@@ -44,10 +48,12 @@ Response example:
 ### Authentication
 
 #### `POST /auth/login`
+
 - Purpose: Issue JWT token
 - Auth: None
 
 Request example:
+
 ```json
 {
   "email": "user@test.company.com",
@@ -56,6 +62,7 @@ Request example:
 ```
 
 Response example:
+
 ```json
 {
   "access_token": "<jwt>",
@@ -65,10 +72,12 @@ Response example:
 ```
 
 #### `POST /auth/register`
+
 - Purpose: Register user (`ALLOW_REGISTRATION=true` required)
 - Auth: None
 
 Request example:
+
 ```json
 {
   "email": "new.user@company.com",
@@ -78,24 +87,29 @@ Request example:
 ```
 
 #### `GET /auth/me`
+
 - Purpose: Current user profile
 - Auth: Bearer
 
 ### Conversations
 
 #### `GET /conversations`
+
 - Purpose: List current user conversations
 - Auth: Bearer
 
 #### `GET /conversations/{conversation_id}`
+
 - Purpose: Conversation detail with message list
 - Auth: Bearer
 
 #### `PATCH /conversations/{conversation_id}`
+
 - Purpose: Update title/pinned
 - Auth: Bearer
 
 Request example:
+
 ```json
 {
   "title": "복지 정책 문의",
@@ -104,17 +118,20 @@ Request example:
 ```
 
 #### `DELETE /conversations/{conversation_id}`
+
 - Purpose: Delete conversation (cascade messages)
 - Auth: Bearer
 
 ### Chat (SSE)
 
 #### `POST /chat/messages`
+
 - Purpose: Send a user message and stream assistant output
 - Auth: Bearer
 - Content-Type: `application/json`
 
 Request example:
+
 ```json
 {
   "conversation_id": null,
@@ -123,6 +140,7 @@ Request example:
 ```
 
 SSE event payload example:
+
 ```json
 {
   "type": "delta",
@@ -132,44 +150,168 @@ SSE event payload example:
 ```
 
 Event types:
+
 - `conversation`
 - `user_message`
 - `delta`
 - `done`
 
+### Messages
+
+#### `POST /messages/{message_id}/feedback`
+
+- Purpose: Submit thumbs-up / thumbs-down feedback for an assistant message
+- Auth: Bearer
+
+Request example:
+
+```json
+{ "value": true }
+```
+
+`value: true` = positive, `false` = negative, `null` = withdraw
+
+Response: `204 No Content`
+
 ### Admin - Users
 
 #### `GET /admin/users`
+
 - Purpose: User list + message counts (optional email query: `q`)
 - Auth: Bearer + `admin`
+
+#### `POST /admin/users`
+
+- Purpose: Invite/create a user (admin-initiated registration)
+- Auth: Bearer + `admin`
+
+Request example:
+
+```json
+{
+  "email": "new.user@company.com",
+  "password": "TempPass123!",
+  "role": "user"
+}
+```
+
+Response: `AdminUserResponse` (`201 Created`)
+
+#### `PATCH /admin/users/{user_id}/role`
+
+- Purpose: Change a user's role
+- Auth: Bearer + `admin`
+
+Request example:
+
+```json
+{ "role": "admin" }
+```
+
+Response: `AdminUserResponse`
+
+#### `PATCH /admin/users/{user_id}`
+
+- Purpose: Toggle a user's active status
+- Auth: Bearer + `admin`
+
+Request example:
+
+```json
+{ "is_active": false }
+```
+
+Response: `AdminUserResponse`
+
+### Admin - Audit Log
+
+#### `GET /admin/audit-log`
+
+- Purpose: Paginated audit log (login, role/status changes)
+- Auth: Bearer + `admin`
+- Query params: `q` (email filter), `action` (CREATE/UPDATE/DELETE/LOGIN/LOGIN_FAILED), `limit` (max 200, default 50), `offset` (default 0)
+
+Response example:
+
+```json
+{
+  "items": [
+    {
+      "id": "...",
+      "user_email": "admin@company.com",
+      "action": "LOGIN",
+      "resource_type": "session",
+      "resource_id": null,
+      "detail": null,
+      "ip_address": "127.0.0.1",
+      "created_at": "2026-06-05T10:00:00+00:00"
+    }
+  ],
+  "total": 1
+}
+```
 
 ### Admin - Stats
 
 #### `GET /admin/stats`
+
 - Purpose: Dashboard statistics
 - Auth: Bearer + `admin`
+
+#### `GET /admin/feedback-stats`
+
+- Purpose: Quality analytics — feedback counts, satisfaction rate, recent feedback list
+- Auth: Bearer + `admin`
+
+Response example:
+
+```json
+{
+  "total_positive": 42,
+  "total_negative": 8,
+  "total_this_month": 15,
+  "total_last_month": 35,
+  "satisfaction_rate": 84.0,
+  "recent_feedback": [
+    {
+      "id": "...",
+      "message_id": "...",
+      "user_email": "user@company.com",
+      "value": true,
+      "conversation_title": "연차 정책 문의",
+      "message_preview": "연차는 입사 후 1개월이 경과하면...",
+      "created_at": "2026-06-05T10:00:00+00:00"
+    }
+  ]
+}
+```
 
 ### Admin - Monitoring
 
 #### `GET /admin/health`
+
 - Purpose: Admin health check
 - Auth: Bearer + `admin`
 
 #### `GET /admin/monitoring/conversations`
+
 - Purpose: Recent conversation monitoring (`q`, `limit`)
 - Auth: Bearer + `admin`
 
 ### Admin - Documents / Indexing
 
 #### `GET /admin/documents`
+
 - Purpose: List indexed documents (`category`, `status`, `q`)
 - Auth: Bearer + `admin`
 
 #### `POST /admin/documents`
+
 - Purpose: Create document metadata and index from inline content
 - Auth: Bearer + `admin`
 
 Request example:
+
 ```json
 {
   "file_name": "policy.txt",
@@ -181,25 +323,30 @@ Request example:
 ```
 
 #### `POST /admin/documents/upload`
+
 - Purpose: Upload file and index
 - Auth: Bearer + `admin`
 - Content-Type: `multipart/form-data` (`file`, `category`, `owner_name`)
 
 #### `GET /admin/documents/index-jobs`
+
 - Purpose: List index jobs (`document_id`, `status`, `limit`)
 - Auth: Bearer + `admin`
 
 #### `POST /admin/documents/{document_id}/reindex`
+
 - Purpose: Reindex an existing document
 - Auth: Bearer + `admin`
 
 #### `DELETE /admin/documents/{document_id}`
+
 - Purpose: Delete document and vector index
 - Auth: Bearer + `admin`
 
 ## Error Contract
 
 - Unified response model (`ErrorResponse`):
+
 ```json
 {
   "detail": "Validation error",
@@ -207,6 +354,7 @@ Request example:
   "errors": []
 }
 ```
+
 - Common statuses: `400`, `401`, `403`, `404`, `422`, `500`
 - Runtime behavior by environment:
   - `422` validation errors use unified `ErrorResponse` in all environments

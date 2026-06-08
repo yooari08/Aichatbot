@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
 from app.api.v1 import (
+    admin_audit_log,
     admin_documents,
     admin_monitoring,
     admin_stats,
@@ -22,3 +23,4 @@ api_router.include_router(admin_documents.router)
 api_router.include_router(admin_users.router)
 api_router.include_router(admin_stats.router)
 api_router.include_router(admin_monitoring.router)
+api_router.include_router(admin_audit_log.router)

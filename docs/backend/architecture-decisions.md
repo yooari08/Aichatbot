@@ -73,6 +73,24 @@
 - Future:
   - Separate admin bootstrap/retention into jobs or maintenance workers
 
+## ADR-007: Audit Log for Admin and Auth Events
+
+- Status: Accepted
+- Decision:
+  - Persist security-relevant events in `audit_log` table
+  - Record actor email separately for display after user deletion
+  - Admin read-only API with pagination and filters
+- Events:
+  - `LOGIN`, `LOGIN_FAILED`, user `CREATE`/`UPDATE` (invite, role, active status)
+- Why:
+  - Operational traceability for internal platform compliance
+  - Foundation for brute-force detection and admin accountability
+- Tradeoffs:
+  - Additional write on every login attempt
+  - Not yet covering document/indexing or RBAC denial events
+- Future:
+  - Extend to document CRUD, index jobs, and denied access attempts
+
 ## Operational Architecture Overview
 
 - Request path: Client -> FastAPI router -> service -> repository -> Postgres

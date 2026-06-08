@@ -6,8 +6,11 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/app/components/ui/table'
 import { AdminTablePanel } from '@/app/components/organisms/AdminTablePanel'
+import { TablePagination } from '@/app/components/molecules/TablePagination'
 import { StatusTag } from '@/app/components/atoms/StatusTag'
 import { SearchInput } from '@/app/components/molecules/SearchInput'
+
+const PAGE_SIZE = 15
 import * as adminApi from '@/app/lib/api/admin'
 import type { ApiDocument, DocumentStatus } from '@/app/lib/api/admin'
 import type { StatusVariant } from '@/app/components/atoms/StatusTag'
@@ -36,6 +39,7 @@ export function DocumentsTable() {
   const [docs, setDocs]         = useState<ApiDocument[]>([])
   const [loading, setLoading]   = useState(true)
   const [search, setSearch]     = useState('')
+  const [page, setPage]         = useState(1)
   const [deleting, setDeleting] = useState<string | null>(null)
   const [uploading, setUploading] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -101,7 +105,9 @@ export function DocumentsTable() {
     }
   }
 
-  const rows = docs.filter((d) => {
+  useEffect(() => { setPage(1) }, [search])
+
+  const filtered = docs.filter((d) => {
     const q = search.toLowerCase()
     return (
       d.file_name.toLowerCase().includes(q) ||
@@ -109,10 +115,19 @@ export function DocumentsTable() {
       (d.owner_name ?? '').toLowerCase().includes(q)
     )
   })
+  const rows = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE)
 
   return (
     <AdminTablePanel
       title={`문서 목록 ${loading ? '' : `(${docs.length}건)`}`}
+      footer={
+        <TablePagination
+          page={page}
+          pageSize={PAGE_SIZE}
+          total={filtered.length}
+          onPageChange={setPage}
+        />
+      }
       actions={
         <>
           <SearchInput value={search} onChange={setSearch} placeholder="문서 검색…" className="w-[200px]" />

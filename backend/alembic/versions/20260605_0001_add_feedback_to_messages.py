@@ -18,10 +18,13 @@ depends_on: Union[str, Sequence[str], None] = None
 
 
 def upgrade() -> None:
-    op.add_column(
-        "messages",
-        sa.Column("feedback", sa.Boolean(), nullable=True),
-    )
+    conn = op.get_bind()
+    existing = [col["name"] for col in sa.inspect(conn).get_columns("messages")]
+    if "feedback" not in existing:
+        op.add_column(
+            "messages",
+            sa.Column("feedback", sa.Boolean(), nullable=True),
+        )
 
 
 def downgrade() -> None:

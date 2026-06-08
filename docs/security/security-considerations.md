@@ -62,10 +62,14 @@
 
 ## Audit and Monitoring
 
-- Add structured security event logs:
-  - auth failures
-  - denied RBAC access
-  - admin actions on documents/indexing
-- Add alerting:
-  - repeated login failures
-  - unusual admin endpoint spikes
+- Current (implemented):
+  - `audit_log` table persists admin user actions (invite, role/status change)
+  - successful login (`LOGIN`) and failed login (`LOGIN_FAILED`) with IP address
+  - admin-only read API: `GET /api/v1/admin/audit-log`
+- Gaps:
+  - denied RBAC access (403) not yet persisted to audit_log
+  - admin document/indexing actions not yet audited
+  - no automated alerting on repeated `LOGIN_FAILED` spikes
+- Recommendation:
+  - extend audit coverage to document CRUD and RBAC denials
+  - alert on `LOGIN_FAILED` rate threshold per IP/email

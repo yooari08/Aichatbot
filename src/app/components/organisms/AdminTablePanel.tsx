@@ -4,12 +4,13 @@ import { cn } from "@/app/lib/utils";
 type Props = {
   title: string;
   actions?: React.ReactNode;
+  footer?: React.ReactNode;
   children: React.ReactNode;
   className?: string;
 };
 
 /** Admin 목록 화면 — 툴바 고정, 테이블 영역만 세로 스크롤 */
-export function AdminTablePanel({ title, actions, children, className }: Props) {
+export function AdminTablePanel({ title, actions, footer, children, className }: Props) {
   return (
     <div className={cn("flex h-full min-h-0 flex-col gap-4", className)}>
       <div className="flex shrink-0 items-center justify-between">
@@ -18,6 +19,7 @@ export function AdminTablePanel({ title, actions, children, className }: Props) 
       </div>
       <Card className="flex min-h-0 flex-1 flex-col gap-0 overflow-hidden p-0">
         <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
+        {footer != null && <div className="shrink-0">{footer}</div>}
       </Card>
     </div>
   );

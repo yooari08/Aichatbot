@@ -8,7 +8,13 @@ from app.models.conversation import Conversation
 from app.models.document import Document, DocumentStatus
 from app.models.message import Message, MessageRole
 from app.models.user import User
-from app.schemas.admin_stats import CategoryStat, DailyStat, FeedbackEntry, FeedbackStatsResponse, StatsResponse
+from app.schemas.admin_stats import (
+    CategoryStat,
+    DailyStat,
+    FeedbackEntry,
+    FeedbackStatsResponse,
+    StatsResponse,
+)
 
 
 class AdminStatsService:

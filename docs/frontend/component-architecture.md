@@ -15,8 +15,19 @@
   - `organisms/ChatSidebar`
     - `molecules/ConversationItem`
   - `organisms/MessageFeed`
-    - `molecules/MessageBubble`
+    - `molecules/MessageBubble` — react-markdown으로 봇 응답 렌더링
     - `molecules/EmailModal`
+- `App`
+  - `organisms/ErrorBoundary` — 전역 런타임 오류 fallback
+- `pages/admin/AdminPage`
+  - `organisms/AdminSidebar`
+  - `pages/admin/views/RolesView` — 권한 매트릭스 + 사용자 역할 변경
+  - `pages/admin/views/AuditLogView` — 감사 로그 테이블 + `TablePagination`
+  - `pages/admin/views/QualityView` — 피드백 통계 대시보드
+  - `organisms/UsersTable`
+    - `InviteUserModal` (inline) — 사용자 초대
+    - `UserEditDialog` (inline) — 역할/활성 상태 편집 모달
+  - `molecules/TablePagination` — 공통 테이블 페이지네이션
 
 ## Change Log (Major)
 
@@ -26,6 +37,24 @@
 - `MessageFeed`에서 `EmailModal`의 open/close와 대상 메시지 상태를 관리
 - `ChatSidebar`에서 pinned 드롭존 및 토글 UX를 담당
 - `ChatbotPage`에서 레이아웃 제약과 사이드바 컨테이너 동작을 조정
+
+### Markdown Rendering (봇 메시지)
+
+- `MessageBubble` 봇 응답에 `react-markdown` + `remark-gfm` 적용
+- `.markdown-body` CSS 클래스를 `globals.css`에 정의하여 전역 스타일 일관성 유지
+- 사용자 메시지는 기존 plain text 유지 (입력값 그대로 표시)
+
+### Admin Views — Roles / AuditLog / Quality
+
+- `RolesView`: 권한 매트릭스(정적) + 사용자별 역할 변경 UI (`PATCH /admin/users/{id}/role`)
+- `AuditLogView`: 액션 배지·검색 포함 감사 로그 테이블 (`GET /admin/audit-log`)
+- `QualityView`: 만족도 KPI, 긍정/부정 비율 바, 최근 피드백 목록 (`GET /admin/feedback-stats`)
+
+### UserEditDialog (사용자 편집 모달)
+
+- `UsersTable` 내 인라인 컴포넌트로 정의
+- 역할(Select) + 활성 상태(Switch) 편집 후 `Promise.all`로 병렬 저장
+- 저장 성공 시 목록 로우를 낙관적으로 업데이트, `message_count`는 원본 유지
 
 ## Component Spec Template
 

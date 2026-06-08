@@ -11,7 +11,7 @@ from app.core.logging import get_logger
 logger = get_logger(__name__)
 
 ALEMBIC_INI = Path(__file__).resolve().parents[2] / "alembic.ini"
-HEAD_REVISION = "20260527_0004"
+HEAD_REVISION = "20260605_0002"
 BASE_REVISION = "20260519_0001"
 
 
@@ -31,25 +31,6 @@ def _resolve_sqlite_path(database_url: str) -> Path | None:
     return None
 
 
-def _documents_schema_ok(inspector) -> bool:
-    if "documents" not in inspector.get_table_names():
-        return False
-    for col in inspector.get_columns("documents"):
-        if col["name"] in ("created_at", "updated_at"):
-            default = str(col.get("default", "")).lower()
-            if "now()" in default:
-                return False
-    return True
-
-
-def _schema_matches_head(inspector, table_names: set[str]) -> bool:
-    required = {"users", "conversations", "messages", "documents", "index_jobs"}
-    if not required.issubset(table_names):
-        return False
-    user_columns = {col["name"] for col in inspector.get_columns("users")}
-    return "external_id" in user_columns and _documents_schema_ok(inspector)
-
-
 def run_alembic_upgrade(settings: Settings) -> None:
     cfg = Config(str(ALEMBIC_INI))
     cfg.set_main_option("sqlalchemy.url", settings.database_url)
@@ -61,12 +42,6 @@ def run_alembic_upgrade(settings: Settings) -> None:
         current = context.get_current_revision()
         inspector = inspect(conn)
         table_names = set(inspector.get_table_names())
-
-        if _schema_matches_head(inspector, table_names):
-            if current != HEAD_REVISION:
-                logger.info("Stamping database at head (schema already present)")
-                command.stamp(cfg, HEAD_REVISION)
-            return
 
         if current is None and table_names:
             if "users" in table_names:

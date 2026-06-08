@@ -22,6 +22,18 @@
 - 모달 open 시 포커스 트랩, close 시 트리거로 포커스 복귀
 - 전송 실패 시 스크린리더가 인지 가능한 에러 메시지 제공
 
+### Admin Audit Log + Table Pagination
+
+- 액션 필터 `Select`와 이메일 검색 `SearchInput` 모두 키보드 접근 가능
+- 페이지네이션 이전/다음 버튼에 시각적 disabled 상태 제공
+- 빈 상태/로딩 상태를 텍스트로 명시 (`로딩 중...`, `감사 로그가 없습니다.`)
+
+### Global Error Boundary
+
+- 런타임 오류 시 사용자 친화적 fallback UI 제공
+- `다시 시도` / `페이지 새로고침` 버튼으로 복구 경로 제공
+- 개발 환경에서만 오류 메시지/스택 표시 (`import.meta.env.DEV`)
+
 ### Admin Documents Error Visibility
 
 - 실패 문서의 오류 텍스트는 상태 컬럼과 분리해 `오류 사유` 컬럼으로 노출

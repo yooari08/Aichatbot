@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Mail } from "lucide-react";
+import { toast } from "sonner";
 import {
   Dialog,
   DialogContent,
@@ -18,23 +19,31 @@ type Props = {
   messageText: string;
 };
 
+function buildBody(messageText: string) {
+  return `안녕하세요,\n\n사내 챗봇에서 확인한 내용을 공유드립니다.\n\n[챗봇 답변]\n${messageText}\n\n위 내용 참고 부탁드립니다.\n\n감사합니다.`;
+}
+
 export function EmailModal({ open, onOpenChange, messageText }: Props) {
   const [to, setTo] = useState("");
   const [subject, setSubject] = useState("사내 챗봇 답변 공유");
-  const [body, setBody] = useState(
-    `안녕하세요,\n\n사내 챗봇에서 확인한 내용을 공유드립니다.\n\n[챗봇 답변]\n${messageText}\n\n위 내용 참고 부탁드립니다.\n\n감사합니다.`
-  );
+  const [body, setBody] = useState(() => buildBody(messageText));
 
-  const handleOpen = (next: boolean) => {
-    if (!next) {
+  useEffect(() => {
+    if (open) {
       setTo("");
       setSubject("사내 챗봇 답변 공유");
+      setBody(buildBody(messageText));
     }
+  }, [open, messageText]);
+
+  const handleOpen = (next: boolean) => {
     onOpenChange(next);
   };
 
   const handleSend = () => {
-    window.alert(`이메일이 전송되었습니다.\n받는 사람: ${to}`);
+    const mailto = `mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    window.location.href = mailto;
+    toast.success("메일 앱이 열렸습니다.");
     handleOpen(false);
   };
 

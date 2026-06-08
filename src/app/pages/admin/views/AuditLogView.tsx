@@ -3,19 +3,34 @@ import { RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/app/components/ui/button'
 import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/app/components/ui/select'
+import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from '@/app/components/ui/table'
 import { SearchInput } from '@/app/components/molecules/SearchInput'
 import { AdminTablePanel } from '@/app/components/organisms/AdminTablePanel'
+import { TablePagination } from '@/app/components/molecules/TablePagination'
 import * as adminApi from '@/app/lib/api/admin'
 import type { AuditLogEntry } from '@/app/lib/api/admin'
+
+const PAGE_SIZE = 20
+
+const ACTION_OPTIONS = [
+  { value: 'all', label: '전체 액션' },
+  { value: 'CREATE', label: 'CREATE' },
+  { value: 'UPDATE', label: 'UPDATE' },
+  { value: 'DELETE', label: 'DELETE' },
+  { value: 'LOGIN', label: 'LOGIN' },
+  { value: 'LOGIN_FAILED', label: 'LOGIN_FAILED' },
+] as const
 
 const ACTION_COLORS: Record<string, string> = {
   CREATE: 'bg-[#DCFCE7] text-[#166534]',
   UPDATE: 'bg-[#EEF2FF] text-[#2563EB]',
   DELETE: 'bg-[#FEE2E2] text-[#991b1b]',
-  LOGIN:  'bg-[#F3F4F6] text-[#374151]',
-  LOGOUT: 'bg-[#F3F4F6] text-[#374151]',
+  LOGIN: 'bg-[#F3F4F6] text-[#374151]',
+  LOGIN_FAILED: 'bg-[#FEE2E2] text-[#991b1b]',
 }
 
 function ActionBadge({ action }: { action: string }) {
@@ -32,15 +47,24 @@ function formatDate(iso: string): string {
 }
 
 export function AuditLogView() {
-  const [rows, setRows]       = useState<AuditLogEntry[]>([])
+  const [rows, setRows] = useState<AuditLogEntry[]>([])
+  const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)
-  const [search, setSearch]   = useState('')
+  const [search, setSearch] = useState('')
+  const [action, setAction] = useState('all')
+  const [page, setPage] = useState(1)
 
-  const fetchRows = useCallback(async (q?: string) => {
+  const fetchRows = useCallback(async (q: string, act: string, p: number) => {
     setLoading(true)
     try {
-      const data = await adminApi.listAuditLog({ q, limit: 200 })
+      const data = await adminApi.listAuditLog({
+        q: q || undefined,
+        action: act === 'all' ? undefined : act,
+        limit: PAGE_SIZE,
+        offset: (p - 1) * PAGE_SIZE,
+      })
       setRows(data.items)
+      setTotal(data.total)
     } catch {
       toast.error('감사 로그를 불러오지 못했습니다.')
     } finally {
@@ -48,23 +72,55 @@ export function AuditLogView() {
     }
   }, [])
 
-  useEffect(() => { void fetchRows() }, [fetchRows])
+  useEffect(() => {
+    void fetchRows(search, action, page)
+  }, [fetchRows, search, action, page])
+
+  const handleSearchChange = (q: string) => {
+    setSearch(q)
+    setPage(1)
+  }
+
+  const handleActionChange = (value: string) => {
+    setAction(value)
+    setPage(1)
+  }
 
   return (
     <AdminTablePanel
-      title={`감사 로그 ${loading ? '' : `(${rows.length}건)`}`}
+      title={`감사 로그 ${loading ? '' : `(${total}건)`}`}
+      footer={
+        <TablePagination
+          page={page}
+          pageSize={PAGE_SIZE}
+          total={total}
+          onPageChange={setPage}
+        />
+      }
       actions={
         <>
           <SearchInput
             value={search}
-            onChange={setSearch}
-            placeholder="이메일/액션 검색…"
-            className="w-[220px]"
+            onChange={handleSearchChange}
+            placeholder="이메일 검색…"
+            className="w-[200px]"
           />
+          <Select value={action} onValueChange={handleActionChange}>
+            <SelectTrigger className="h-8 w-[150px] text-[12px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {ACTION_OPTIONS.map((opt) => (
+                <SelectItem key={opt.value} value={opt.value} className="text-[12px]">
+                  {opt.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <Button
             size="sm"
             variant="outline"
-            onClick={() => void fetchRows(search)}
+            onClick={() => void fetchRows(search, action, page)}
             disabled={loading}
             className="gap-1.5"
           >
@@ -92,34 +148,28 @@ export function AuditLogView() {
               </TableCell>
             </TableRow>
           ) : (
-            rows
-              .filter((r) =>
-                search === '' ||
-                r.user_email.includes(search) ||
-                r.action.toLowerCase().includes(search.toLowerCase())
-              )
-              .map((row) => (
-                <TableRow key={row.id} className="border-[#F0F0F0] hover:bg-[#FAFAFA]">
-                  <TableCell className="px-4 py-2.5 text-[11px] text-muted-foreground whitespace-nowrap">
-                    {formatDate(row.created_at)}
-                  </TableCell>
-                  <TableCell className="px-4 py-2.5 text-[12px] text-foreground max-w-[180px] truncate">
-                    {row.user_email}
-                  </TableCell>
-                  <TableCell className="px-4 py-2.5">
-                    <ActionBadge action={row.action} />
-                  </TableCell>
-                  <TableCell className="px-4 py-2.5 text-[12px] text-muted-foreground">
-                    {row.resource_type}{row.resource_id ? ` #${row.resource_id.slice(0, 8)}` : ''}
-                  </TableCell>
-                  <TableCell className="px-4 py-2.5 text-[12px] text-muted-foreground max-w-[240px] truncate">
-                    {row.detail ?? '—'}
-                  </TableCell>
-                  <TableCell className="px-4 py-2.5 text-[11px] text-muted-foreground">
-                    {row.ip_address ?? '—'}
-                  </TableCell>
-                </TableRow>
-              ))
+            rows.map((row) => (
+              <TableRow key={row.id} className="border-[#F0F0F0] hover:bg-[#FAFAFA]">
+                <TableCell className="px-4 py-2.5 text-[11px] text-muted-foreground whitespace-nowrap">
+                  {formatDate(row.created_at)}
+                </TableCell>
+                <TableCell className="px-4 py-2.5 text-[12px] text-foreground max-w-[180px] truncate">
+                  {row.user_email}
+                </TableCell>
+                <TableCell className="px-4 py-2.5">
+                  <ActionBadge action={row.action} />
+                </TableCell>
+                <TableCell className="px-4 py-2.5 text-[12px] text-muted-foreground">
+                  {row.resource_type}{row.resource_id ? ` #${row.resource_id.slice(0, 8)}` : ''}
+                </TableCell>
+                <TableCell className="px-4 py-2.5 text-[12px] text-muted-foreground max-w-[240px] truncate">
+                  {row.detail ?? '—'}
+                </TableCell>
+                <TableCell className="px-4 py-2.5 text-[11px] text-muted-foreground">
+                  {row.ip_address ?? '—'}
+                </TableCell>
+              </TableRow>
+            ))
           )}
         </TableBody>
       </Table>

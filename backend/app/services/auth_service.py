@@ -5,29 +5,71 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings
 from app.core.security import create_access_token, hash_password, verify_password
+from app.models.audit_log import AuditAction
 from app.models.user import User, UserRole
 from app.repositories.user_repository import UserRepository
 from app.schemas.auth import LoginRequest, RegisterRequest, TokenResponse, UserResponse
+from app.services.audit_service import log_action
 
 
 class AuthService:
     def __init__(self, session: AsyncSession, settings: Settings) -> None:
         self._settings = settings
+        self._session = session
         self._users = UserRepository(session)
 
-    async def login(self, payload: LoginRequest) -> TokenResponse:
+    async def login(self, payload: LoginRequest, ip_address: str | None = None) -> TokenResponse:
         user = await self._users.get_by_email(payload.email)
         if user is None or not verify_password(payload.password, user.hashed_password):
+            await self._log_login_failure(
+                email=payload.email,
+                user_id=user.id if user is not None else None,
+                ip_address=ip_address,
+                detail="invalid credentials",
+            )
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="Invalid email or password",
             )
         if not user.is_active:
+            await self._log_login_failure(
+                email=user.email,
+                user_id=user.id,
+                ip_address=ip_address,
+                detail="account disabled",
+            )
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Account is disabled",
             )
+        await log_action(
+            self._session,
+            action=AuditAction.LOGIN,
+            user_id=user.id,
+            user_email=user.email,
+            resource_type="session",
+            ip_address=ip_address,
+        )
         return self._build_token_response(user)
+
+    async def _log_login_failure(
+        self,
+        *,
+        email: str,
+        user_id: uuid.UUID | None,
+        ip_address: str | None,
+        detail: str,
+    ) -> None:
+        await log_action(
+            self._session,
+            action=AuditAction.LOGIN_FAILED,
+            user_id=user_id,
+            user_email=email,
+            resource_type="session",
+            detail=detail,
+            ip_address=ip_address,
+        )
+        await self._session.commit()
 
     async def register(self, payload: RegisterRequest) -> UserResponse:
         if not self._settings.allow_registration:

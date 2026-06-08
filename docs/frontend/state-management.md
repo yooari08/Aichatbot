@@ -27,6 +27,14 @@
 - 상태 소유: `MessageFeed`(선택 메시지 + open boolean)
 - 닫기: 전송 완료/취소 시 상태 초기화
 
+### Message Feedback (좋아요/싫어요)
+
+- 상태 소유: `useChat` hook — `likedMessages: Record<string, boolean | null>`
+- 초기화: `localStorage` 키 `chat_liked_messages`에서 복원 (`loadLikedMessages`)
+- 업데이트: 버튼 클릭 → state 갱신 → `saveLikedMessages`(localStorage) → `POST /messages/{id}/feedback` API 호출
+- API 실패는 `.catch(() => {})` 로 무시 (로컬 상태는 유지)
+- 동일 값 재클릭 시 `null`(철회)로 토글
+
 ## Rules
 
 - UI 컴포넌트에서 직접 API 호출하지 않는다(예외 시 근거 문서화).
