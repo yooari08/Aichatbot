@@ -14,14 +14,14 @@ type Props = {
   onCopy: (id: string, text: string) => void
 }
 
-export function MessageFeed({
+export const MessageFeed = ({
   messages,
   isTyping,
   likedMessages,
   copiedId,
   onLike,
   onCopy,
-}: Props) {
+}: Props) => {
   const bottomRef = useRef<HTMLDivElement>(null)
   const prevMessageCountRef = useRef(messages.length)
   const [emailText, setEmailText] = useState<string | null>(null)

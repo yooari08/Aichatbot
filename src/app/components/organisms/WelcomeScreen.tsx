@@ -8,7 +8,7 @@ type Props = {
   composer: ReactNode;
 };
 
-export function WelcomeScreen({ onSend, composer }: Props) {
+export const WelcomeScreen = ({ onSend, composer }: Props) => {
   return (
     <div className="flex-1 flex flex-col items-center justify-center px-6 py-12 overflow-y-auto">
       <Logo className="w-14 h-14 mb-4" />

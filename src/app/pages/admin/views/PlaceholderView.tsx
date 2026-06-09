@@ -3,7 +3,7 @@ import type { AdminView } from "@/app/types/admin";
 
 type Props = { view: AdminView };
 
-export function PlaceholderView({ view }: Props) {
+export const PlaceholderView = ({ view }: Props) => {
   return (
     <div className="flex flex-col items-center justify-center h-full text-center py-24">
       <div className="w-14 h-14 rounded-2xl bg-[#EEF2FF] flex items-center justify-center mb-4">

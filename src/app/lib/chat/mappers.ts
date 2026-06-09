@@ -7,14 +7,14 @@ import type { Category, Conversation, ConversationGroup, Message } from '@/app/t
 
 const CATEGORIES: Category[] = ['HR', '복리후생', '프로젝트', '이슈']
 
-export function asCategory(value: string | null | undefined): Category {
+export const asCategory = (value: string | null | undefined): Category => {
   if (value && CATEGORIES.includes(value as Category)) {
     return value as Category
   }
   return '이슈'
 }
 
-export function conversationGroup(updatedAt: Date): ConversationGroup {
+export const conversationGroup = (updatedAt: Date): ConversationGroup => {
   const now = new Date()
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   const startOfYesterday = new Date(startOfToday)
@@ -25,7 +25,7 @@ export function conversationGroup(updatedAt: Date): ConversationGroup {
   return 'week'
 }
 
-export function formatConversationTime(updatedAt: Date): string {
+export const formatConversationTime = (updatedAt: Date): string => {
   const now = new Date()
   const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate())
   if (updatedAt >= startOfToday) {
@@ -34,20 +34,18 @@ export function formatConversationTime(updatedAt: Date): string {
   return updatedAt.toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit' })
 }
 
-export function mapApiMessage(message: ApiMessage): Message {
-  return {
-    id: message.id,
-    text: message.content,
-    sender: message.role === 'user' ? 'user' : 'bot',
-    timestamp: new Date(message.created_at),
-    source: message.source ?? undefined,
-  }
-}
+export const mapApiMessage = (message: ApiMessage): Message => ({
+  id: message.id,
+  text: message.content,
+  sender: message.role === 'user' ? 'user' : 'bot',
+  timestamp: new Date(message.created_at),
+  source: message.source ?? undefined,
+})
 
-export function mapConversationSummary(
+export const mapConversationSummary = (
   summary: ApiConversationSummary,
   messages: Message[] = []
-): Conversation {
+): Conversation => {
   const updatedAt = new Date(summary.updated_at)
   return {
     id: summary.id,
@@ -60,9 +58,8 @@ export function mapConversationSummary(
   }
 }
 
-export function mapConversationDetail(detail: ApiConversationDetail): Conversation {
-  return mapConversationSummary(
+export const mapConversationDetail = (detail: ApiConversationDetail): Conversation =>
+  mapConversationSummary(
     detail,
     detail.messages.map(mapApiMessage)
   )
-}

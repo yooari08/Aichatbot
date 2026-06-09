@@ -23,11 +23,11 @@ export interface ApiDocument {
   updated_at: string
 }
 
-export function listDocuments(params?: {
+export const listDocuments = (params?: {
   status?: DocumentStatus
   category?: string
   q?: string
-}): Promise<ApiDocument[]> {
+}): Promise<ApiDocument[]> => {
   const sp = new URLSearchParams()
   if (params?.status)   sp.set('status', params.status)
   if (params?.category) sp.set('category', params.category)
@@ -36,19 +36,17 @@ export function listDocuments(params?: {
   return apiFetch<ApiDocument[]>(`${ADMIN}/documents${qs}`)
 }
 
-export function deleteDocument(id: string): Promise<void> {
-  return apiFetch<void>(`${ADMIN}/documents/${id}`, { method: 'DELETE' })
-}
+export const deleteDocument = (id: string): Promise<void> =>
+  apiFetch<void>(`${ADMIN}/documents/${id}`, { method: 'DELETE' })
 
-export function reindexDocument(id: string): Promise<void> {
-  return apiFetch<void>(`${ADMIN}/documents/${id}/reindex`, { method: 'POST', body: JSON.stringify({}) })
-}
+export const reindexDocument = (id: string): Promise<void> =>
+  apiFetch<void>(`${ADMIN}/documents/${id}/reindex`, { method: 'POST', body: JSON.stringify({}) })
 
-export function uploadDocument(payload: {
+export const uploadDocument = (payload: {
   file: File
   category?: string
   owner_name?: string
-}): Promise<ApiDocument> {
+}): Promise<ApiDocument> => {
   const form = new FormData()
   form.append('file', payload.file)
   if (payload.category) form.append('category', payload.category)
@@ -76,35 +74,32 @@ export interface UserListResponse {
   total: number
 }
 
-export function listUsers(q?: string): Promise<UserListResponse> {
+export const listUsers = (q?: string): Promise<UserListResponse> => {
   const qs = q ? `?q=${encodeURIComponent(q)}` : ''
   return apiFetch<UserListResponse>(`${ADMIN}/users${qs}`)
 }
 
-export function updateUserRole(userId: string, role: UserRole): Promise<ApiUser> {
-  return apiFetch<ApiUser>(`${ADMIN}/users/${userId}/role`, {
+export const updateUserRole = (userId: string, role: UserRole): Promise<ApiUser> =>
+  apiFetch<ApiUser>(`${ADMIN}/users/${userId}/role`, {
     method: 'PATCH',
     body: JSON.stringify({ role }),
   })
-}
 
-export function toggleUserActive(userId: string, is_active: boolean): Promise<ApiUser> {
-  return apiFetch<ApiUser>(`${ADMIN}/users/${userId}`, {
+export const toggleUserActive = (userId: string, is_active: boolean): Promise<ApiUser> =>
+  apiFetch<ApiUser>(`${ADMIN}/users/${userId}`, {
     method: 'PATCH',
     body: JSON.stringify({ is_active }),
   })
-}
 
-export function inviteUser(payload: {
+export const inviteUser = (payload: {
   email: string
   password: string
   role: UserRole
-}): Promise<ApiUser> {
-  return apiFetch<ApiUser>(`${ADMIN}/users`, {
+}): Promise<ApiUser> =>
+  apiFetch<ApiUser>(`${ADMIN}/users`, {
     method: 'POST',
     body: JSON.stringify(payload),
   })
-}
 
 // ── 감사 로그 ────────────────────────────────────────────
 export interface AuditLogEntry {
@@ -123,12 +118,12 @@ export interface AuditLogListResponse {
   total: number
 }
 
-export function listAuditLog(params?: {
+export const listAuditLog = (params?: {
   q?: string
   action?: string
   limit?: number
   offset?: number
-}): Promise<AuditLogListResponse> {
+}): Promise<AuditLogListResponse> => {
   const sp = new URLSearchParams()
   if (params?.q) sp.set('q', params.q)
   if (params?.action) sp.set('action', params.action)
@@ -161,9 +156,8 @@ export interface StatsResponse {
   top_conversation_titles: string[]
 }
 
-export function getStats(): Promise<StatsResponse> {
-  return apiFetch<StatsResponse>(`${ADMIN}/stats`)
-}
+export const getStats = (): Promise<StatsResponse> =>
+  apiFetch<StatsResponse>(`${ADMIN}/stats`)
 
 // ── 품질/피드백 ──────────────────────────────────────────
 export interface FeedbackEntry {
@@ -185,9 +179,8 @@ export interface FeedbackStatsResponse {
   recent_feedback: FeedbackEntry[]
 }
 
-export function getFeedbackStats(): Promise<FeedbackStatsResponse> {
-  return apiFetch<FeedbackStatsResponse>(`${ADMIN}/feedback-stats`)
-}
+export const getFeedbackStats = (): Promise<FeedbackStatsResponse> =>
+  apiFetch<FeedbackStatsResponse>(`${ADMIN}/feedback-stats`)
 
 // ── 모니터링 / 헬스 ───────────────────────────────────────
 export interface AdminHealthResponse {
@@ -212,16 +205,19 @@ export interface MonitoringConversationListResponse {
   total: number
 }
 
-export function getAdminHealth(): Promise<AdminHealthResponse> {
-  return apiFetch<AdminHealthResponse>(`${ADMIN}/health`)
-}
+export const getAdminHealth = (): Promise<AdminHealthResponse> =>
+  apiFetch<AdminHealthResponse>(`${ADMIN}/health`)
 
-export function listMonitoringConversations(params?: {
+export const listMonitoringConversations = (params?: {
   q?: string
+  date_from?: string
+  date_to?: string
   limit?: number
-}): Promise<MonitoringConversationListResponse> {
+}): Promise<MonitoringConversationListResponse> => {
   const sp = new URLSearchParams()
   if (params?.q) sp.set('q', params.q)
+  if (params?.date_from) sp.set('date_from', params.date_from)
+  if (params?.date_to) sp.set('date_to', params.date_to)
   if (params?.limit) sp.set('limit', String(params.limit))
   const qs = sp.toString() ? `?${sp.toString()}` : ''
   return apiFetch<MonitoringConversationListResponse>(`${ADMIN}/monitoring/conversations${qs}`)

@@ -1,6 +1,6 @@
 import { motion } from "motion/react";
 
-export function TypingIndicator() {
+export const TypingIndicator = () => {
   return (
     <div className="flex items-end gap-2">
       <div className="w-7 h-7 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center flex-shrink-0">

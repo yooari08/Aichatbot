@@ -33,7 +33,7 @@ type Props = {
   isLoadingList?: boolean
 }
 
-function PinnedDropZone({
+const PinnedDropZone = ({
   onDrop,
   children,
   isEmpty,
@@ -41,7 +41,7 @@ function PinnedDropZone({
   onDrop: (id: string) => void;
   children: React.ReactNode;
   isEmpty: boolean;
-}) {
+}) => {
   const [{ isOver }, drop] = useDrop({
     accept: DRAG_TYPE_CONVERSATION,
     drop: (item: { id: string }) => onDrop(item.id),
@@ -76,7 +76,7 @@ function PinnedDropZone({
   );
 }
 
-export function ChatSidebar({
+export const ChatSidebar = ({
   conversations,
   activeId,
   onSelectConversation,
@@ -88,7 +88,7 @@ export function ChatSidebar({
   onToggle,
   collapsed = false,
   isLoadingList = false,
-}: Props) {
+}: Props) => {
   const { user } = useAuth();
   const handleLogout = useLogout();
   const [search, setSearch] = useState("");

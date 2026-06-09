@@ -8,7 +8,7 @@ type Props = {
   onPageChange: (page: number) => void
 }
 
-export function TablePagination({ page, pageSize, total, onPageChange }: Props) {
+export const TablePagination = ({ page, pageSize, total, onPageChange }: Props) => {
   const totalPages = Math.max(1, Math.ceil(total / pageSize))
   const from = Math.min((page - 1) * pageSize + 1, total)
   const to   = Math.min(page * pageSize, total)

@@ -10,7 +10,7 @@ type Props = {
 };
 
 /** Admin 목록 화면 — 툴바 고정, 테이블 영역만 세로 스크롤 */
-export function AdminTablePanel({ title, actions, footer, children, className }: Props) {
+export const AdminTablePanel = ({ title, actions, footer, children, className }: Props) => {
   return (
     <div className={cn("flex h-full min-h-0 flex-col gap-4", className)}>
       <div className="flex shrink-0 items-center justify-between">

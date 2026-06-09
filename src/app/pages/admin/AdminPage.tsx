@@ -26,11 +26,11 @@ const COLLAPSE_BREAKPOINT = 1200;
 
 const TABLE_VIEWS: AdminView[] = ["documents", "users", "auditLog"];
 
-function isTableView(view: AdminView) {
+const isTableView = (view: AdminView) => {
   return TABLE_VIEWS.includes(view);
 }
 
-function renderView(view: AdminView) {
+const renderView = (view: AdminView) => {
   switch (view) {
     case "documents":
       return <DocumentsView />;
@@ -53,7 +53,7 @@ function renderView(view: AdminView) {
   }
 }
 
-export default function AdminPage() {
+const AdminPage = () => {
   const { activeView, setActiveView, expandedGroups, toggleGroup } = useAdminNav();
   const [sidebarOpen, setSidebarOpen] = useState(
     () => window.innerWidth > COLLAPSE_BREAKPOINT
@@ -108,3 +108,5 @@ export default function AdminPage() {
     </div>
   );
 }
+
+export default AdminPage

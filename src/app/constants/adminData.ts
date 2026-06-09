@@ -52,7 +52,7 @@ export const NAV: NavSection[] = [
   },
 ]
 
-export function getBreadcrumb(view: AdminView): string[] {
+export const getBreadcrumb = (view: AdminView): string[] => {
   for (const section of NAV) {
     for (const group of section.groups) {
       if (group.subs.length === 0 && group.key === view) {

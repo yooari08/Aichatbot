@@ -1,4 +1,4 @@
-export default function Logo({ className = "w-8 h-8" }: { className?: string }) {
+const Logo = ({ className = "w-8 h-8" }: { className?: string }) => {
   return (
     <svg
       viewBox="0 0 40 40"
@@ -40,3 +40,5 @@ export default function Logo({ className = "w-8 h-8" }: { className?: string }) 
     </svg>
   );
 }
+
+export default Logo

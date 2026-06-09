@@ -17,7 +17,7 @@ type Props = {
   popoverAlign?: "start" | "center" | "end";
 };
 
-export function SidebarUserProfile({
+export const SidebarUserProfile = ({
   initials,
   name,
   subtitle,
@@ -28,7 +28,7 @@ export function SidebarUserProfile({
   compact = false,
   popoverSide = "top",
   popoverAlign = "start",
-}: Props) {
+}: Props) => {
   const inner = (
     <>
       <UserAvatar initials={initials} variant={avatarVariant} />

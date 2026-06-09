@@ -13,7 +13,7 @@ const VARIANTS: Record<StatusVariant, string> = {
 
 type Props = { label: string; variant: StatusVariant; className?: string };
 
-export function StatusTag({ label, variant, className }: Props) {
+export const StatusTag = ({ label, variant, className }: Props) => {
   return (
     <Badge
       className={cn(

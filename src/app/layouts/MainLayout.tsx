@@ -1,9 +1,11 @@
 import { Outlet } from "react-router";
 
-export default function Layout() {
+const Layout = () => {
   return (
     <div className="h-full">
       <Outlet />
     </div>
   );
 }
+
+export default Layout

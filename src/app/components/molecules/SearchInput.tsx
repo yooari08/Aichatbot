@@ -9,7 +9,7 @@ type Props = {
   className?: string;
 };
 
-export function SearchInput({ value, onChange, placeholder = "검색…", className }: Props) {
+export const SearchInput = ({ value, onChange, placeholder = "검색…", className }: Props) => {
   return (
     <div className={cn("relative flex items-center", className)}>
       <Search className="absolute left-2.5 size-3.5 text-muted-foreground pointer-events-none" />

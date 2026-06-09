@@ -29,13 +29,13 @@ const STATUS_VARIANT: Record<DocumentStatus, StatusVariant> = {
   pending:    'gray',
 }
 
-function fileExt(path: string): string {
+const fileExt = (path: string): string => {
   return path.split('.').pop()?.toUpperCase() ?? '—'
 }
 
 import { formatIsoDate } from '@/app/lib/formatIsoDate'
 
-export function DocumentsTable() {
+export const DocumentsTable = () => {
   const [docs, setDocs]         = useState<ApiDocument[]>([])
   const [loading, setLoading]   = useState(true)
   const [search, setSearch]     = useState('')

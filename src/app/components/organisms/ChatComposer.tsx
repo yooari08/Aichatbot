@@ -15,7 +15,7 @@ type Props = {
   pinned?: boolean;
 };
 
-export function ChatComposer({
+export const ChatComposer = ({
   value,
   onChange,
   onSend,
@@ -23,7 +23,7 @@ export function ChatComposer({
   className,
   showDisclaimer = true,
   pinned = false,
-}: Props) {
+}: Props) => {
   const handleKey = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();

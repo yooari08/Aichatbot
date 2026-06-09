@@ -12,7 +12,7 @@ import { cn } from '@/app/lib/utils'
 
 const ALLOW_REGISTRATION = import.meta.env.VITE_ALLOW_REGISTRATION === 'true'
 
-function formatLoginError(err: unknown): string {
+const formatLoginError = (err: unknown): string => {
   if (err instanceof ApiError) {
     return err.message
   }
@@ -25,7 +25,7 @@ function formatLoginError(err: unknown): string {
   return '요청을 처리하지 못했습니다. 잠시 후 다시 시도해 주세요.'
 }
 
-export default function LoginPage() {
+const LoginPage = () => {
   const { login, register } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
@@ -208,3 +208,5 @@ export default function LoginPage() {
     </div>
   )
 }
+
+export default LoginPage

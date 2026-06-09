@@ -16,7 +16,7 @@ type Props = {
   className?: string;
 };
 
-export function UserAvatar({ initials, variant = "dark", size = "md", className }: Props) {
+export const UserAvatar = ({ initials, variant = "dark", size = "md", className }: Props) => {
   return (
     <Avatar className={cn(size === "sm" ? "size-7" : "size-9", className)}>
       <AvatarFallback className={cn("text-[11px] font-bold", BG[variant])}>

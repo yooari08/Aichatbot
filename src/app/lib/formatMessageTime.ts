@@ -1,4 +1,4 @@
-export function formatMessageTime(date: Date) {
+export const formatMessageTime = (date: Date) => {
   return new Intl.DateTimeFormat("ko-KR", {
     month: "numeric",
     day: "numeric",

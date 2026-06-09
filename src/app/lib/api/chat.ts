@@ -11,7 +11,7 @@ import type {
 
 const API_BASE = import.meta.env.VITE_API_BASE_URL ?? ''
 
-function parseSseChunk(chunk: string): ChatStreamEvent | null {
+const parseSseChunk = (chunk: string): ChatStreamEvent | null => {
   const line = chunk.split('\n').find((row) => row.startsWith('data: '))
   if (!line) return null
   try {
@@ -21,37 +21,32 @@ function parseSseChunk(chunk: string): ChatStreamEvent | null {
   }
 }
 
-export function listConversations(): Promise<ApiConversationSummary[]> {
-  return apiFetch<ApiConversationSummary[]>('/api/v1/conversations')
-}
+export const listConversations = (): Promise<ApiConversationSummary[]> =>
+  apiFetch<ApiConversationSummary[]>('/api/v1/conversations')
 
-export function getConversation(id: string): Promise<ApiConversationDetail> {
-  return apiFetch<ApiConversationDetail>(`/api/v1/conversations/${id}`)
-}
+export const getConversation = (id: string): Promise<ApiConversationDetail> =>
+  apiFetch<ApiConversationDetail>(`/api/v1/conversations/${id}`)
 
-export function updateConversation(
+export const updateConversation = (
   id: string,
   body: { title?: string; pinned?: boolean }
-): Promise<ApiConversationSummary> {
-  return apiFetch<ApiConversationSummary>(`/api/v1/conversations/${id}`, {
+): Promise<ApiConversationSummary> =>
+  apiFetch<ApiConversationSummary>(`/api/v1/conversations/${id}`, {
     method: 'PATCH',
     body: JSON.stringify(body),
   })
-}
 
-export function deleteConversation(id: string): Promise<void> {
-  return apiFetch<void>(`/api/v1/conversations/${id}`, { method: 'DELETE' })
-}
+export const deleteConversation = (id: string): Promise<void> =>
+  apiFetch<void>(`/api/v1/conversations/${id}`, { method: 'DELETE' })
 
-export function submitFeedback(
+export const submitFeedback = (
   messageId: string,
   value: boolean | null
-): Promise<void> {
-  return apiFetch<void>(`/api/v1/messages/${messageId}/feedback`, {
+): Promise<void> =>
+  apiFetch<void>(`/api/v1/messages/${messageId}/feedback`, {
     method: 'POST',
     body: JSON.stringify({ value }),
   })
-}
 
 export async function* streamChatMessage(
   payload: SendChatMessagePayload,

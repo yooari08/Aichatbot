@@ -1,3 +1,4 @@
+from datetime import date, datetime, time
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -52,6 +53,8 @@ class AdminMonitoringService:
         self,
         *,
         q: str | None,
+        date_from: date | None,
+        date_to: date | None,
         limit: int,
     ) -> AdminConversationListResponse:
         query = (
@@ -60,6 +63,12 @@ class AdminMonitoringService:
             .order_by(Conversation.updated_at.desc())
             .limit(limit)
         )
+
+        if date_from:
+            query = query.where(Conversation.updated_at >= datetime.combine(date_from, time.min))
+        if date_to:
+            query = query.where(Conversation.updated_at <= datetime.combine(date_to, time.max))
+
         rows = (await self._session.execute(query)).all()
 
         items: list[AdminConversationRow] = []

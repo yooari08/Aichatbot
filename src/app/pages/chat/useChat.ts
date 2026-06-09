@@ -4,7 +4,7 @@ import * as chatApi from '@/app/lib/api/chat'
 
 const LIKED_STORAGE_KEY = 'chat_liked_messages'
 
-function loadLikedMessages(): Record<string, boolean | null> {
+const loadLikedMessages = (): Record<string, boolean | null> => {
   try {
     return JSON.parse(localStorage.getItem(LIKED_STORAGE_KEY) ?? '{}') as Record<string, boolean | null>
   } catch {
@@ -12,7 +12,7 @@ function loadLikedMessages(): Record<string, boolean | null> {
   }
 }
 
-function saveLikedMessages(map: Record<string, boolean | null>): void {
+const saveLikedMessages = (map: Record<string, boolean | null>): void => {
   try {
     localStorage.setItem(LIKED_STORAGE_KEY, JSON.stringify(map))
   } catch {}
@@ -27,7 +27,7 @@ import {
 } from '@/app/lib/chat/mappers'
 import type { Conversation, Message } from '@/app/types/chat'
 
-function chatErrorMessage(error: unknown): string {
+const chatErrorMessage = (error: unknown): string => {
   if (error instanceof ApiError) return error.message
   if (error instanceof TypeError && error.message.includes('fetch')) {
     return 'API 서버에 연결할 수 없습니다. 백엔드(8080) 실행 여부를 확인해 주세요.'
@@ -35,12 +35,12 @@ function chatErrorMessage(error: unknown): string {
   return '요청을 처리하지 못했습니다.'
 }
 
-function moveConversationToTop(conversations: Conversation[], updated: Conversation): Conversation[] {
+const moveConversationToTop = (conversations: Conversation[], updated: Conversation): Conversation[] => {
   const rest = conversations.filter((c) => c.id !== updated.id)
   return [updated, ...rest]
 }
 
-export function useChat() {
+export const useChat = () => {
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [activeId, setActiveId] = useState<string | null>(null)
   const [input, setInput] = useState('')

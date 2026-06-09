@@ -9,7 +9,7 @@ type Props = {
   className?: string;
 };
 
-export function SidebarShell({ header, headerClassName, footer, children, className }: Props) {
+export const SidebarShell = ({ header, headerClassName, footer, children, className }: Props) => {
   return (
     <aside
       className={cn(

@@ -13,7 +13,7 @@ const labelMap: Record<string, string> = {
   bedrock: 'Bedrock',
 }
 
-export function SettingsView() {
+export const SettingsView = () => {
   const [health, setHealth] = useState<AdminHealthResponse | null>(null)
   const [loading, setLoading] = useState(true)
 

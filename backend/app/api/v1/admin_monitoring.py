@@ -1,3 +1,4 @@
+from datetime import date
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
@@ -27,9 +28,13 @@ async def list_admin_conversations(
     session: DbSession,
     settings: SettingsDep,
     q: str | None = Query(default=None, description="대화 제목/이메일 검색"),
-    limit: int = Query(default=50, ge=1, le=200),
+    date_from: date | None = Query(default=None, description="검색 시작일 (YYYY-MM-DD)"),
+    date_to: date | None = Query(default=None, description="검색 종료일 (YYYY-MM-DD)"),
+    limit: int = Query(default=200, ge=1, le=500),
 ) -> AdminConversationListResponse:
     return await AdminMonitoringService(session, settings).list_recent_conversations(
         q=q,
+        date_from=date_from,
+        date_to=date_to,
         limit=limit,
     )

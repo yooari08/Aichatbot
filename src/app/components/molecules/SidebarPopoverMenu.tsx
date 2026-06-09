@@ -10,7 +10,7 @@ type Props = {
   items: SidebarPopoverMenuItem[];
 };
 
-export function SidebarPopoverMenu({ items }: Props) {
+export const SidebarPopoverMenu = ({ items }: Props) => {
   return (
     <div className="flex flex-col gap-0.5">
       {items.map((item) => (

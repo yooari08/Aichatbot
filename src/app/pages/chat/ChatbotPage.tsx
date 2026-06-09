@@ -11,7 +11,7 @@ import { useChat } from './useChat'
 
 const COLLAPSE_BREAKPOINT = 1200;
 
-export default function ChatbotPage() {
+const ChatbotPage = () => {
   const {
     conversations,
     activeId,
@@ -118,3 +118,5 @@ export default function ChatbotPage() {
     </DndProvider>
   );
 }
+
+export default ChatbotPage

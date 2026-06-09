@@ -33,7 +33,7 @@ const ACTION_COLORS: Record<string, string> = {
   LOGIN_FAILED: 'bg-[#FEE2E2] text-[#991b1b]',
 }
 
-function ActionBadge({ action }: { action: string }) {
+const ActionBadge = ({ action }: { action: string }) => {
   const cls = ACTION_COLORS[action.toUpperCase()] ?? 'bg-[#F3F4F6] text-[#374151]'
   return (
     <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold ${cls}`}>
@@ -42,11 +42,9 @@ function ActionBadge({ action }: { action: string }) {
   )
 }
 
-function formatDate(iso: string): string {
-  return iso.slice(0, 19).replace('T', ' ')
-}
+const formatDate = (iso: string): string => iso.slice(0, 19).replace('T', ' ')
 
-export function AuditLogView() {
+export const AuditLogView = () => {
   const [rows, setRows] = useState<AuditLogEntry[]>([])
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState(true)

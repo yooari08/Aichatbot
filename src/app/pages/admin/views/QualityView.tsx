@@ -7,7 +7,7 @@ import { KpiCard } from '@/app/components/molecules/KpiCard'
 import * as adminApi from '@/app/lib/api/admin'
 import type { FeedbackStatsResponse } from '@/app/lib/api/admin'
 
-function pctChange(current: number, prev: number): string {
+const pctChange = (current: number, prev: number): string => {
   if (prev === 0) return current > 0 ? '신규 데이터' : '—'
   const diff = ((current - prev) / prev) * 100
   return diff >= 0
@@ -15,11 +15,9 @@ function pctChange(current: number, prev: number): string {
     : `▼ ${Math.abs(diff).toFixed(1)}% vs 지난달`
 }
 
-function formatDate(iso: string): string {
-  return iso.slice(0, 16).replace('T', ' ')
-}
+const formatDate = (iso: string): string => iso.slice(0, 16).replace('T', ' ')
 
-export function QualityView() {
+export const QualityView = () => {
   const [stats, setStats]     = useState<FeedbackStatsResponse | null>(null)
   const [loading, setLoading] = useState(true)
 

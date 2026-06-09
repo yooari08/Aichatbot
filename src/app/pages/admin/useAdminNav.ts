@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import type { AdminView } from "@/app/types/admin";
 
-export function useAdminNav(initial: AdminView = "documents") {
+export const useAdminNav = (initial: AdminView = "documents") => {
   const [activeView, setActiveView] = useState<AdminView>(initial);
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(
     new Set(["kb", "analytics", "users"])

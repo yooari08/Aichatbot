@@ -3,7 +3,7 @@ import { cn } from "@/app/lib/utils";
 
 type Props = { className?: string };
 
-export function BotBadge({ className }: Props) {
+export const BotBadge = ({ className }: Props) => {
   return (
     <Badge
       className={cn(

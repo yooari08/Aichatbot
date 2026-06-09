@@ -32,7 +32,7 @@ type Props = {
   onUnpin: (id: string) => void;
 };
 
-export function ConversationItem({
+export const ConversationItem = ({
   conversation,
   isActive,
   onClick,
@@ -40,7 +40,7 @@ export function ConversationItem({
   onDelete,
   onPin,
   onUnpin,
-}: Props) {
+}: Props) => {
   const [renameOpen, setRenameOpen] = useState(false);
   const [renameTitle, setRenameTitle] = useState(conversation.title);
 

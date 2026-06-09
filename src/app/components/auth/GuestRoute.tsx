@@ -5,7 +5,7 @@ type Props = {
   children: React.ReactNode
 }
 
-export function GuestRoute({ children }: Props) {
+export const GuestRoute = ({ children }: Props) => {
   const { user, isLoading } = useAuth()
   const location = useLocation()
   const from = (location.state as { from?: string } | null)?.from ?? '/'

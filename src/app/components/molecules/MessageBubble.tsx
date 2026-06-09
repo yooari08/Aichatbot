@@ -9,7 +9,7 @@ import { cn } from "@/app/lib/utils";
 import { BRAND_PRIMARY_RGB } from "@/app/constants/brand";
 import type { Message } from "@/app/types/chat";
 
-function formatText(text: string) {
+const formatText = (text: string) => {
   return text.split("\n").map((line, i, arr) =>
     line === "" ? (
       <br key={i} />
@@ -30,7 +30,7 @@ type ActionButtonProps = {
   children: React.ReactNode;
 };
 
-function ActionButton({ tooltip, onClick, active, activeClassName, children }: ActionButtonProps) {
+const ActionButton = ({ tooltip, onClick, active, activeClassName, children }: ActionButtonProps) => {
   return (
     <Tooltip>
       <TooltipTrigger asChild>
@@ -57,7 +57,7 @@ type Props = {
   onEmail: (text: string) => void;
 };
 
-export function MessageBubble({ message, liked, copiedId, onLike, onCopy, onEmail }: Props) {
+export const MessageBubble = ({ message, liked, copiedId, onLike, onCopy, onEmail }: Props) => {
   const isBot = message.sender === "bot";
   const isCopied = copiedId === message.id;
   const timeLabel = formatMessageTime(message.timestamp);

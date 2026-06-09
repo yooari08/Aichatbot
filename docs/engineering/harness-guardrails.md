@@ -25,6 +25,27 @@
 - 가독성을 해치는 중복/충돌 클래스 스택은 피합니다.
 - 전역 변경이 아닌 경우 스타일 수정 범위를 컴포넌트 내부로 제한합니다.
 
+### ES6 코딩 규칙 (필수)
+
+- 모든 `.ts`/`.tsx` 파일은 ES6+ 문법을 사용합니다.
+- **함수 선언 금지**: `function foo() {}` 대신 화살표 함수 `const foo = () => {}` 를 사용합니다.
+  - React 컴포넌트, 커스텀 훅, 유틸리티 함수 모두 동일하게 적용합니다.
+  - 예외: `async function*` generator 함수(화살표 함수로 표현 불가), React Error Boundary 클래스(React 제약)는 `function` 유지.
+- `export default function Foo()` 패턴은 `const Foo = () => { ... }; export default Foo` 형태로 분리합니다.
+- 단일 표현식 반환 함수는 중괄호 없는 간결 화살표 형태를 선호합니다: `const fn = (x) => x * 2`
+- `var` 사용 금지. `const`를 기본으로 사용하고, 재할당이 필요한 경우만 `let`을 씁니다.
+
+### 상태 관리 규칙 (React Hooks 필수)
+
+- **클래스 컴포넌트 신규 작성 금지**: 예외는 React Error Boundary(`componentDidCatch` 필요) 한 가지뿐입니다.
+- 로컬 상태: `useState`를 사용합니다.
+- 파생 상태 / 계산값: `useMemo`로 메모이제이션합니다.
+- 이벤트 핸들러 / 콜백: `useCallback`으로 래핑합니다.
+- 사이드이펙트: `useEffect`로 처리합니다.
+- 컴포넌트 간 공유 상태: `useContext` + `createContext`로 구성합니다.
+- DOM 참조 / 뮤터블 컨테이너: `useRef`를 사용합니다.
+- 복잡한 상태 로직은 커스텀 훅(`useXxx`)으로 분리합니다.
+
 ### React Component Rules
 
 - 함수형 컴포넌트에 명시적 TypeScript props를 사용합니다.
@@ -110,4 +131,3 @@
 - [ ] API health/ready + RBAC + (해당 시) SSE 동작 확인
 - [ ] DB 마이그레이션 HEAD_REVISION 불일치/역방향 stamp 없음 확인
 - [ ] 보안(업로드/프롬프트 인젝션) 문서/코드 보호조치 동기화 확인
-

@@ -8,7 +8,7 @@ type Props = {
   onClick: (q: string) => void;
 };
 
-export function SuggestionCard({ cat, q, onClick }: Props) {
+export const SuggestionCard = ({ cat, q, onClick }: Props) => {
   return (
     <Card
       role="button"

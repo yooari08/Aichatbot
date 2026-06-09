@@ -1,6 +1,6 @@
 import type { Category } from "../types/chat";
 
-export function getBotResponse(message: string): { text: string; source?: string } {
+export const getBotResponse = (message: string): { text: string; source?: string } => {
   const msg = message.toLowerCase();
   if (msg.includes("연차") || msg.includes("휴가") || msg.includes("반차"))
     return { text: "입사 후 1개월이 경과하면 연차를 사용할 수 있습니다.\n· 1년 미만: 월 1일씩 부여\n· 1년 이상: 연 15일 일괄 부여\n\n원칙적으로 3영업일 전까지 신청해야 하며, 긴급 사유 시 당일 신청 가능(팀장 승인 필요)합니다.", source: "취업규칙_2026.pdf · p.12" };
@@ -19,7 +19,7 @@ export function getBotResponse(message: string): { text: string; source?: string
   return { text: `"${message}"에 대해 답변드립니다.\n\n현재 베타 서비스 중으로 일부 질문에 대한 답변이 제한될 수 있습니다. 정확한 정보가 필요하신 경우 해당 부서로 직접 문의해 주시기 바랍니다.` };
 }
 
-export function detectCategory(text: string): Category {
+export const detectCategory = (text: string): Category => {
   const t = text.toLowerCase();
   if (t.includes("연차") || t.includes("휴가") || t.includes("반차") || t.includes("급여") || t.includes("인사")) return "HR";
   if (t.includes("복리") || t.includes("복지") || t.includes("경조") || t.includes("건강검진")) return "복리후생";

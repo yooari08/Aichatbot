@@ -1,5 +1,5 @@
 import { AnalyticsDashboard } from "@/app/components/organisms/AnalyticsDashboard";
 
-export function AnalyticsView() {
+export const AnalyticsView = () => {
   return <AnalyticsDashboard />;
 }

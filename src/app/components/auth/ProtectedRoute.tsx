@@ -7,7 +7,7 @@ type Props = {
   requiredRole?: UserRole
 }
 
-export function ProtectedRoute({ children, requiredRole }: Props) {
+export const ProtectedRoute = ({ children, requiredRole }: Props) => {
   const { user, isLoading } = useAuth()
   const location = useLocation()
 

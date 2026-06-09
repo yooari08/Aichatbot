@@ -19,11 +19,11 @@ type Props = {
   messageText: string;
 };
 
-function buildBody(messageText: string) {
+const buildBody = (messageText: string) => {
   return `안녕하세요,\n\n사내 챗봇에서 확인한 내용을 공유드립니다.\n\n[챗봇 답변]\n${messageText}\n\n위 내용 참고 부탁드립니다.\n\n감사합니다.`;
 }
 
-export function EmailModal({ open, onOpenChange, messageText }: Props) {
+export const EmailModal = ({ open, onOpenChange, messageText }: Props) => {
   const [to, setTo] = useState("");
   const [subject, setSubject] = useState("사내 챗봇 답변 공유");
   const [body, setBody] = useState(() => buildBody(messageText));

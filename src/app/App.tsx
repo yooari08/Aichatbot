@@ -4,7 +4,7 @@ import { AuthProvider } from '@/app/contexts/AuthContext'
 import { ErrorBoundary } from '@/app/components/organisms/ErrorBoundary'
 import { router } from './routes'
 
-export default function App() {
+const App = () => {
   return (
     <ErrorBoundary>
       <AuthProvider>
@@ -14,3 +14,5 @@ export default function App() {
     </ErrorBoundary>
   )
 }
+
+export default App

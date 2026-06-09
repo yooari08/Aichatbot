@@ -9,7 +9,7 @@ import type { StatsResponse, DailyStat } from '@/app/lib/api/admin'
 
 const CAT_COLORS = ['#2563EB', '#4C6FD8', '#7C9CF8', '#B0C0F0', '#CBD5E1', '#94A3B8']
 
-function pctChange(current: number, prev: number): string {
+const pctChange = (current: number, prev: number): string => {
   if (prev === 0) return current > 0 ? '신규 데이터' : '—'
   const diff = ((current - prev) / prev) * 100
   return diff >= 0
@@ -17,7 +17,7 @@ function pctChange(current: number, prev: number): string {
     : `▼ ${Math.abs(diff).toFixed(1)}% vs 지난달`
 }
 
-function DailyBarChart({ data }: { data: DailyStat[] }) {
+const DailyBarChart = ({ data }: { data: DailyStat[] }) => {
   const max = Math.max(...data.map((d) => d.count), 1)
   return (
     <div className="flex items-end gap-[3px] h-24 w-full">
@@ -39,7 +39,7 @@ function DailyBarChart({ data }: { data: DailyStat[] }) {
   )
 }
 
-export function AnalyticsDashboard() {
+export const AnalyticsDashboard = () => {
   const [stats, setStats]     = useState<StatsResponse | null>(null)
   const [loading, setLoading] = useState(true)
 

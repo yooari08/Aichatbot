@@ -1,3 +1,1 @@
-export function formatIsoDate(iso: string): string {
-  return iso.slice(0, 10)
-}
+export const formatIsoDate = (iso: string): string => iso.slice(0, 10)

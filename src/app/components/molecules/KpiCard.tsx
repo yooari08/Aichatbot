@@ -9,7 +9,7 @@ type Props = {
   className?: string;
 };
 
-export function KpiCard({ label, value, sub, accent, className }: Props) {
+export const KpiCard = ({ label, value, sub, accent, className }: Props) => {
   return (
     <Card className={cn("gap-0 p-4", className)}>
       <CardContent className="p-0 flex flex-col gap-1">

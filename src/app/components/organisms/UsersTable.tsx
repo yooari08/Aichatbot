@@ -39,7 +39,7 @@ type EditState = { role: UserRole; is_active: boolean }
 
 type InviteForm = { email: string; password: string; role: UserRole }
 
-function InviteUserModal({
+const InviteUserModal = ({
   open,
   onClose,
   onCreated,
@@ -47,7 +47,7 @@ function InviteUserModal({
   open: boolean
   onClose: () => void
   onCreated: (user: ApiUser) => void
-}) {
+}) => {
   const [form, setForm] = useState<InviteForm>({ email: '', password: '', role: 'user' })
   const [saving, setSaving] = useState(false)
 
@@ -134,7 +134,7 @@ function InviteUserModal({
   )
 }
 
-function UserEditDialog({
+const UserEditDialog = ({
   user,
   open,
   onClose,
@@ -144,7 +144,7 @@ function UserEditDialog({
   open: boolean
   onClose: () => void
   onSaved: (updated: ApiUser) => void
-}) {
+}) => {
   const [form, setForm] = useState<EditState>({ role: user.role, is_active: user.is_active })
   const [saving, setSaving] = useState(false)
 
@@ -229,7 +229,7 @@ function UserEditDialog({
   )
 }
 
-export function UsersTable() {
+export const UsersTable = () => {
   const [users, setUsers]           = useState<ApiUser[]>([])
   const [loading, setLoading]       = useState(true)
   const [search, setSearch]         = useState('')

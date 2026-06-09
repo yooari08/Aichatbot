@@ -29,13 +29,13 @@ const ROLE_OPTIONS: { value: UserRole; label: string }[] = [
   { value: 'user',  label: '일반 사용자' },
 ]
 
-function PermIcon({ ok }: { ok: boolean }) {
+const PermIcon = ({ ok }: { ok: boolean }) => {
   return ok
     ? <Check className="size-3.5 text-[#16a34a] mx-auto" />
     : <X className="size-3.5 text-[#d1d5db] mx-auto" />
 }
 
-export function RolesView() {
+export const RolesView = () => {
   const [users, setUsers]         = useState<ApiUser[]>([])
   const [loading, setLoading]     = useState(true)
   const [updating, setUpdating]   = useState<string | null>(null)

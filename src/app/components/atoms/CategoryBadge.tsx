@@ -5,7 +5,7 @@ import type { Category } from "@/app/types/chat";
 
 type Props = { category: Category; className?: string };
 
-export function CategoryBadge({ category, className }: Props) {
+export const CategoryBadge = ({ category, className }: Props) => {
   return (
     <Badge
       className={cn(

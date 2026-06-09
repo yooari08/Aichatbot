@@ -22,14 +22,14 @@ type Props = {
   onToggle: () => void;
 };
 
-export function AdminSidebar({
+export const AdminSidebar = ({
   activeView,
   expandedGroups,
   toggleGroup,
   setActiveView,
   collapsed,
   onToggle,
-}: Props) {
+}: Props) => {
   const { user } = useAuth();
   const handleLogout = useLogout();
 

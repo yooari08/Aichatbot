@@ -8,20 +8,16 @@ import type {
 
 const AUTH_PREFIX = '/api/v1/auth'
 
-export function login(payload: LoginRequest): Promise<TokenResponse> {
-  return apiFetch<TokenResponse>(`${AUTH_PREFIX}/login`, {
+export const login = (payload: LoginRequest): Promise<TokenResponse> =>
+  apiFetch<TokenResponse>(`${AUTH_PREFIX}/login`, {
     method: 'POST',
     body: JSON.stringify(payload),
   })
-}
 
-export function register(payload: RegisterRequest): Promise<AuthUser> {
-  return apiFetch<AuthUser>(`${AUTH_PREFIX}/register`, {
+export const register = (payload: RegisterRequest): Promise<AuthUser> =>
+  apiFetch<AuthUser>(`${AUTH_PREFIX}/register`, {
     method: 'POST',
     body: JSON.stringify(payload),
   })
-}
 
-export function fetchMe(): Promise<AuthUser> {
-  return apiFetch<AuthUser>(`${AUTH_PREFIX}/me`)
-}
+export const fetchMe = (): Promise<AuthUser> => apiFetch<AuthUser>(`${AUTH_PREFIX}/me`)
