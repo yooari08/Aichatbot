@@ -38,6 +38,9 @@ export async function apiFetch<T>(
       } catch {
         body = {}
       }
+      if (response.status === 401) {
+        window.dispatchEvent(new CustomEvent('auth:unauthorized'))
+      }
       throw new ApiError(response.status, body)
     }
 

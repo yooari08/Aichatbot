@@ -1,0 +1,39 @@
+INFO:     Started server process [17956]
+INFO:     Waiting for application startup.
+INFO  [alembic.runtime.migration] Context impl SQLiteImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [sqlalchemy.engine.Engine] BEGIN (implicit)
+INFO  [sqlalchemy.engine.Engine] SELECT count(*) AS count_1 
+FROM users
+INFO  [sqlalchemy.engine.Engine] [generated in 0.00116s] ()
+INFO  [sqlalchemy.engine.Engine] SELECT users.id, users.email, users.external_id, users.hashed_password, users.role, users.is_active, users.created_at, users.updated_at 
+FROM users 
+WHERE users.email = ?
+INFO  [sqlalchemy.engine.Engine] [generated in 0.00099s] ('user@test.company.com',)
+INFO  [sqlalchemy.engine.Engine] UPDATE users SET hashed_password=?, updated_at=(CURRENT_TIMESTAMP) WHERE users.id = ?
+INFO  [sqlalchemy.engine.Engine] [generated in 0.00629s] ('$2b$12$bDFqzHOYG05Lv31d6.QcKOD2F7RdUeW1gO9TR0FwrV76ooUVY1Ydu', '2b277005ab934600a6ccf6bad4cfe1ff')
+INFO  [sqlalchemy.engine.Engine] SELECT users.id, users.email, users.external_id, users.hashed_password, users.role, users.is_active, users.created_at, users.updated_at 
+FROM users 
+WHERE users.email = ?
+INFO  [sqlalchemy.engine.Engine] [cached since 0.2591s ago] ('admin@test.company.com',)
+INFO  [sqlalchemy.engine.Engine] UPDATE users SET hashed_password=?, updated_at=(CURRENT_TIMESTAMP) WHERE users.id = ?
+INFO  [sqlalchemy.engine.Engine] [cached since 0.2552s ago] ('$2b$12$CoukDaK2lsGp2l9U5sq6Guk4NzvvVC96T9IN7CnF6HLpLGAOXRnxG', '811481cd536f408b8532cb6a2f9685a2')
+INFO  [sqlalchemy.engine.Engine] DELETE FROM conversations WHERE conversations.updated_at < ?
+INFO  [sqlalchemy.engine.Engine] [generated in 0.00049s] ('2026-03-11 02:11:31.119810',)
+INFO  [sqlalchemy.engine.Engine] COMMIT
+INFO  [sqlalchemy.engine.Engine] BEGIN (implicit)
+INFO  [sqlalchemy.engine.Engine] SELECT users.id, users.email, users.external_id, users.hashed_password, users.role, users.is_active, users.created_at, users.updated_at 
+FROM users 
+WHERE users.email = ?
+INFO  [sqlalchemy.engine.Engine] [cached since 213s ago] ('admin@test.company.com',)
+INFO  [sqlalchemy.engine.Engine] INSERT INTO audit_log (id, user_id, user_email, action, resource_type, resource_id, detail, ip_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING created_at
+INFO  [sqlalchemy.engine.Engine] [generated in 0.00633s] ('bed583ae2e1f4253b6320e9caeb1bb0b', '811481cd536f408b8532cb6a2f9685a2', 'admin@test.company.com', 'LOGIN_FAILED', 'session', None, 'invalid credentials', '127.0.0.1')
+INFO  [sqlalchemy.engine.Engine] COMMIT
+INFO  [sqlalchemy.engine.Engine] BEGIN (implicit)
+INFO  [sqlalchemy.engine.Engine] SELECT users.id, users.email, users.external_id, users.hashed_password, users.role, users.is_active, users.created_at, users.updated_at 
+FROM users 
+WHERE users.email = ?
+INFO  [sqlalchemy.engine.Engine] [cached since 279.5s ago] ('july100404@gmail.com',)
+INFO  [sqlalchemy.engine.Engine] INSERT INTO audit_log (id, user_id, user_email, action, resource_type, resource_id, detail, ip_address) VALUES (?, ?, ?, ?, ?, ?, ?, ?) RETURNING created_at
+INFO  [sqlalchemy.engine.Engine] [cached since 66.42s ago] ('4b3b6336fe0542058c0bc3dad6305106', '796fcfb2bd3642628e3c93b95deb8606', 'july100404@gmail.com', 'LOGIN_FAILED', 'session', None, 'invalid credentials', '127.0.0.1')
+INFO  [sqlalchemy.engine.Engine] COMMIT

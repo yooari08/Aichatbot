@@ -34,6 +34,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   useEffect(() => {
+    const onUnauthorized = () => {
+      clearStoredToken()
+      setUser(null)
+    }
+    window.addEventListener('auth:unauthorized', onUnauthorized)
+    return () => window.removeEventListener('auth:unauthorized', onUnauthorized)
+  }, [])
+
+  useEffect(() => {
     let cancelled = false
 
     async function bootstrap() {

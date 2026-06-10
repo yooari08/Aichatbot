@@ -1,4 +1,5 @@
-from datetime import date, datetime, time
+from datetime import date, datetime, time, timezone, timedelta
+from uuid import UUID
 from sqlalchemy import func, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -64,41 +65,63 @@ class AdminMonitoringService:
             .limit(limit)
         )
 
+        KST = timezone(timedelta(hours=9))
         if date_from:
-            query = query.where(Conversation.updated_at >= datetime.combine(date_from, time.min))
+            # Convert KST midnight → naive UTC so SQLite stores-as-UTC compares correctly
+            dt = datetime.combine(date_from, time.min, tzinfo=KST).astimezone(timezone.utc).replace(tzinfo=None)
+            query = query.where(Conversation.updated_at >= dt)
         if date_to:
-            query = query.where(Conversation.updated_at <= datetime.combine(date_to, time.max))
+            dt = datetime.combine(date_to, time.max, tzinfo=KST).astimezone(timezone.utc).replace(tzinfo=None)
+            query = query.where(Conversation.updated_at <= dt)
 
         rows = (await self._session.execute(query)).all()
+        if not rows:
+            return AdminConversationListResponse(items=[], total=0)
+
+        conv_ids: list[UUID] = [conv.id for conv, _ in rows]
+
+        # Bulk message count — 1 query for all conversations
+        count_rows = (await self._session.execute(
+            select(Message.conversation_id, func.count().label("cnt"))
+            .where(Message.conversation_id.in_(conv_ids))
+            .group_by(Message.conversation_id)
+        )).all()
+        counts: dict[UUID, int] = {r.conversation_id: r.cnt for r in count_rows}
+
+        # Bulk last message — 1 query using ROW_NUMBER window function
+        rn = func.row_number().over(
+            partition_by=Message.conversation_id,
+            order_by=Message.created_at.desc(),
+        ).label("rn")
+        ranked_subq = (
+            select(
+                Message.conversation_id,
+                Message.content,
+                Message.role,
+                rn,
+            )
+            .where(Message.conversation_id.in_(conv_ids))
+            .subquery()
+        )
+        last_rows = (await self._session.execute(
+            select(ranked_subq).where(ranked_subq.c.rn == 1)
+        )).all()
+        lasts: dict[UUID, tuple[str, str]] = {
+            r.conversation_id: (r.content, r.role) for r in last_rows
+        }
 
         items: list[AdminConversationRow] = []
         for conv, email in rows:
-            if q:
-                q_lower = q.lower()
-                if q_lower not in conv.title.lower() and q_lower not in email.lower():
-                    continue
-
-            count_result = await self._session.execute(
-                select(func.count()).select_from(Message).where(Message.conversation_id == conv.id)
-            )
-            message_count = int(count_result.scalar_one())
-
-            last_result = await self._session.execute(
-                select(Message)
-                .where(Message.conversation_id == conv.id)
-                .order_by(Message.created_at.desc())
-                .limit(1)
-            )
-            last = last_result.scalar_one_or_none()
+            last_pair = lasts.get(conv.id)
             items.append(
                 AdminConversationRow(
                     id=conv.id,
                     user_email=email,
                     title=conv.title,
                     category=conv.category,
-                    message_count=message_count,
-                    last_message=(last.content[:120] if last else None),
-                    last_message_role=(last.role.value if last else None),
+                    message_count=counts.get(conv.id, 0),
+                    last_message=(last_pair[0][:120] if last_pair else None),
+                    last_message_role=(last_pair[1] if last_pair else None),
                     updated_at=conv.updated_at,
                 )
             )
