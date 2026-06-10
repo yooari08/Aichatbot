@@ -1,0 +1,39 @@
+# Ingress — routes / → frontend, /api → backend API
+# ingressClassName: traefik  (Rancher Desktop / K3s default)
+# ingressClassName: nginx    (nginx ingress controller)
+#
+# Local access (Rancher Desktop):
+#   Add to C:\Windows\System32\drivers\etc\hosts:
+#     127.0.0.1  ai-chatbot.local
+#   Then open: http://ai-chatbot.local
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ai-chatbot
+  namespace: ai-chatbot
+  annotations:
+    nginx.ingress.kubernetes.io/proxy-body-size: "50m"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "300"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "300"
+    # SSE keep-alive for /api/v1/chat/messages streaming
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: ai-chatbot.local
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: api
+                port:
+                  number: 8080
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: frontend
+                port:
+                  number: 80

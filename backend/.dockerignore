@@ -1,0 +1,13 @@
+.venv
+__pycache__
+*.pyc
+*.pyo
+.pytest_cache
+tests
+*.egg-info
+.ruff_cache
+dev.db
+data/
+.env*
+*.log
+# alembic/versions/ — needed in image for migrations, do NOT exclude

@@ -12,6 +12,9 @@ resources:
   - chroma/service.yaml
   - api/deployment.yaml
   - api/service.yaml
+  - frontend/deployment.yaml
+  - frontend/service.yaml
+  - ingress.yaml
 
 # Apply secrets separately (see secret.example.yaml) — not included by default.
 # - secret.local.yaml

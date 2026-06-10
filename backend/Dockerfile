@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 
-FROM python:3.11-slim AS base
+FROM public.ecr.aws/docker/library/python:3.11-slim AS base
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
@@ -15,8 +15,9 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     && rm -rf /var/lib/apt/lists/*
 
-COPY pyproject.toml ./
+COPY pyproject.toml README.md alembic.ini ./
 COPY app ./app
+COPY alembic ./alembic
 
 RUN pip install --upgrade pip && pip install .
 
@@ -26,6 +27,8 @@ RUN useradd --create-home --uid 10001 appuser
 
 COPY --from=builder /usr/local /usr/local
 COPY app ./app
+COPY alembic.ini ./
+COPY alembic ./alembic
 
 USER appuser
 

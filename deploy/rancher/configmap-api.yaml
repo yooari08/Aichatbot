@@ -18,4 +18,5 @@ data:
   BEDROCK_MOCK_ENABLED: "false"
   CONVERSATION_RETENTION_DAYS: "90"
   DOCUMENTS_STORAGE_PATH: /data/documents
-  CORS_ORIGINS: http://localhost:5173
+  # Comma-separated origins: Ingress host + local dev server
+  CORS_ORIGINS: http://ai-chatbot.local,http://localhost:5173
