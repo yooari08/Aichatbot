@@ -11,7 +11,7 @@ from app.core.logging import get_logger
 logger = get_logger(__name__)
 
 ALEMBIC_INI = Path(__file__).resolve().parents[2] / "alembic.ini"
-HEAD_REVISION = "20260605_0002"
+HEAD_REVISION = "20260611_0003"
 BASE_REVISION = "20260519_0001"
 
 

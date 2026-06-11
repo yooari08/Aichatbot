@@ -72,11 +72,13 @@ async def list_index_jobs(
     document_id: uuid.UUID | None = None,
     status_filter: IndexJobStatus | None = Query(default=None, alias="status"),
     limit: int = Query(default=50, ge=1, le=200),
+    offset: int = Query(default=0, ge=0),
 ) -> list[IndexJobResponse]:
     return await AdminDocumentService(session, settings).list_index_jobs(
         document_id=document_id,
         status_filter=status_filter,
         limit=limit,
+        offset=offset,
     )
 
 

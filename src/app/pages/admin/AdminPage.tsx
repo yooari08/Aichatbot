@@ -9,6 +9,9 @@ import { AuditLogView } from "./views/AuditLogView";
 import { QualityView } from "./views/QualityView";
 import { MonitoringView } from "./views/MonitoringView";
 import { SettingsView } from "./views/SettingsView";
+import { IndexLogView } from "./views/IndexLogView";
+import { CategoriesView } from "./views/CategoriesView";
+import { FaqView } from "./views/FaqView";
 import { PlaceholderView } from "./views/PlaceholderView";
 import { useAdminNav } from "./useAdminNav";
 import {
@@ -24,7 +27,7 @@ import type { AdminView } from "@/app/types/admin";
 
 const COLLAPSE_BREAKPOINT = 1200;
 
-const TABLE_VIEWS: AdminView[] = ["documents", "users", "auditLog"];
+const TABLE_VIEWS: AdminView[] = ["documents", "users", "auditLog", "indexLog", "faq"];
 
 const isTableView = (view: AdminView) => {
   return TABLE_VIEWS.includes(view);
@@ -48,6 +51,12 @@ const renderView = (view: AdminView) => {
       return <MonitoringView />;
     case "settings":
       return <SettingsView />;
+    case "indexLog":
+      return <IndexLogView />;
+    case "categories":
+      return <CategoriesView />;
+    case "faq":
+      return <FaqView />;
     default:
       return <PlaceholderView view={view} />;
   }

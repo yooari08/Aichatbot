@@ -222,3 +222,99 @@ export const listMonitoringConversations = (params?: {
   const qs = sp.toString() ? `?${sp.toString()}` : ''
   return apiFetch<MonitoringConversationListResponse>(`${ADMIN}/monitoring/conversations${qs}`)
 }
+
+// ── 색인 로그 ──────────────────────────────────────────────
+export type IndexJobStatus = 'pending' | 'running' | 'succeeded' | 'failed'
+
+export interface IndexJobEntry {
+  id: string
+  document_id: string
+  document_file_name: string | null
+  status: IndexJobStatus
+  message: string | null
+  created_at: string
+  updated_at: string
+}
+
+export const listIndexJobs = (params?: {
+  status?: IndexJobStatus
+  document_id?: string
+  limit?: number
+  offset?: number
+}): Promise<IndexJobEntry[]> => {
+  const sp = new URLSearchParams()
+  if (params?.status)      sp.set('status', params.status)
+  if (params?.document_id) sp.set('document_id', params.document_id)
+  if (params?.limit)       sp.set('limit', String(params.limit))
+  if (params?.offset)      sp.set('offset', String(params.offset))
+  const qs = sp.toString() ? `?${sp.toString()}` : ''
+  return apiFetch<IndexJobEntry[]>(`${ADMIN}/documents/index-jobs${qs}`)
+}
+
+// ── 카테고리 ────────────────────────────────────────────────
+export interface CategorySummary {
+  name: string
+  document_count: number
+}
+
+export const listCategories = (): Promise<CategorySummary[]> =>
+  apiFetch<CategorySummary[]>(`${ADMIN}/categories`)
+
+export const renameCategory = (name: string, newName: string): Promise<void> =>
+  apiFetch<void>(`${ADMIN}/categories/${encodeURIComponent(name)}/rename`, {
+    method: 'PATCH',
+    body: JSON.stringify({ new_name: newName }),
+  })
+
+export const deleteCategory = (name: string, reassignTo?: string): Promise<void> => {
+  const sp = new URLSearchParams()
+  if (reassignTo) sp.set('reassign_to', reassignTo)
+  const qs = sp.toString() ? `?${sp.toString()}` : ''
+  return apiFetch<void>(`${ADMIN}/categories/${encodeURIComponent(name)}${qs}`, { method: 'DELETE' })
+}
+
+export const createCategory = (name: string): Promise<CategorySummary> =>
+  apiFetch<CategorySummary>(`${ADMIN}/categories`, {
+    method: 'POST',
+    body: JSON.stringify({ name }),
+  })
+
+// ── FAQ ──────────────────────────────────────────────────────
+export interface FaqEntry {
+  id: string
+  question: string
+  answer: string
+  category: string | null
+  display_order: number
+  is_active: boolean
+  created_at: string
+  updated_at: string
+}
+
+export const listFaqs = (params?: {
+  category?: string
+  is_active?: boolean
+}): Promise<FaqEntry[]> => {
+  const sp = new URLSearchParams()
+  if (params?.category)                sp.set('category', params.category)
+  if (params?.is_active !== undefined) sp.set('is_active', String(params.is_active))
+  const qs = sp.toString() ? `?${sp.toString()}` : ''
+  return apiFetch<FaqEntry[]>(`${ADMIN}/faq${qs}`)
+}
+
+export const createFaq = (
+  payload: Omit<FaqEntry, 'id' | 'created_at' | 'updated_at'>,
+): Promise<FaqEntry> =>
+  apiFetch<FaqEntry>(`${ADMIN}/faq`, { method: 'POST', body: JSON.stringify(payload) })
+
+export const updateFaq = (
+  id: string,
+  payload: Partial<Omit<FaqEntry, 'id' | 'created_at' | 'updated_at'>>,
+): Promise<FaqEntry> =>
+  apiFetch<FaqEntry>(`${ADMIN}/faq/${id}`, { method: 'PUT', body: JSON.stringify(payload) })
+
+export const deleteFaq = (id: string): Promise<void> =>
+  apiFetch<void>(`${ADMIN}/faq/${id}`, { method: 'DELETE' })
+
+export const toggleFaq = (id: string): Promise<FaqEntry> =>
+  apiFetch<FaqEntry>(`${ADMIN}/faq/${id}/toggle`, { method: 'PATCH' })

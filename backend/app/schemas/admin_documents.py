@@ -41,6 +41,7 @@ class IndexJobResponse(BaseModel):
     document_id: UUID
     status: IndexJobStatus
     message: str | None = None
+    document_file_name: str | None = None
     created_at: datetime
     updated_at: datetime
 

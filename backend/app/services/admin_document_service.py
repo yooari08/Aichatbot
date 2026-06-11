@@ -3,11 +3,12 @@ import uuid
 from pathlib import Path
 
 from fastapi import HTTPException, status
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import Settings
-from app.models.document import DocumentStatus
-from app.models.index_job import IndexJobStatus
+from app.models.document import Document, DocumentStatus
+from app.models.index_job import IndexJob, IndexJobStatus
 from app.repositories.document_repository import DocumentRepository
 from app.repositories.index_job_repository import IndexJobRepository
 from app.schemas.admin_documents import (
@@ -20,6 +21,7 @@ from app.services.indexing_service import IndexingService
 
 class AdminDocumentService:
     def __init__(self, session: AsyncSession, settings: Settings) -> None:
+        self._session = session
         self._documents = DocumentRepository(session)
         self._index_jobs = IndexJobRepository(session)
         self._settings = settings
@@ -101,9 +103,16 @@ class AdminDocumentService:
             message="Initial indexing started",
         )
 
+        try:
+            decoded = self._decode_content(content)
+        except ValueError as exc:
+            await self._documents.update_status(row, status=DocumentStatus.FAILED, error_message=str(exc))
+            await self._index_jobs.update(job, status=IndexJobStatus.FAILED, message=str(exc))
+            return DocumentResponse.model_validate(row)
+
         await self._index_document_content(
             document_id=row.id,
-            content=self._decode_content(content),
+            content=decoded,
             document=row,
             job=job,
         )
@@ -161,13 +170,30 @@ class AdminDocumentService:
         document_id: uuid.UUID | None,
         status_filter: IndexJobStatus | None,
         limit: int,
+        offset: int,
     ) -> list[IndexJobResponse]:
-        jobs = await self._index_jobs.list_jobs(
-            document_id=document_id,
-            status=status_filter,
-            limit=limit,
+        stmt = (
+            select(IndexJob, Document.file_name)
+            .join(Document, Document.id == IndexJob.document_id)
         )
-        return [IndexJobResponse.model_validate(job) for job in jobs]
+        if document_id:
+            stmt = stmt.where(IndexJob.document_id == document_id)
+        if status_filter:
+            stmt = stmt.where(IndexJob.status == status_filter)
+        stmt = stmt.order_by(IndexJob.created_at.desc()).offset(offset).limit(limit)
+        result = await self._session.execute(stmt)
+        return [
+            IndexJobResponse(
+                id=job.id,
+                document_id=job.document_id,
+                status=job.status,
+                message=job.message,
+                document_file_name=file_name,
+                created_at=job.created_at,
+                updated_at=job.updated_at,
+            )
+            for job, file_name in result.all()
+        ]
 
     @staticmethod
     def _decode_content(content: bytes) -> str:
